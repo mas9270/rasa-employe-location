@@ -42,7 +42,7 @@ export default function DeleteModal(props: { data: { active: boolean, info: any 
                 top: '50%',
                 left: '50%',
                 transform: 'translate(-50%, -50%)',
-                width: "400px",
+                width: { xs: "300px", sm: "400px" },
                 height: "auto",
                 bgcolor: 'background.paper',
                 border: '2px solid #000',

@@ -7,6 +7,8 @@ import AddEditModal from "./components/addEdit";
 import DeleteModal from "./components/delete";
 import { DefaultIcon1, ColoredMarker } from "@/utils/leafletConfig";
 import PathLocation from "./components/pathLocation";
+import { getPathLength } from "geolib";
+
 
 export default function LocationsPage() {
     const [currentLocation, setCurrentLocation] = useState<any>(null)
@@ -108,6 +110,15 @@ export default function LocationsPage() {
         setPathLocation({ active: true, info: item })
     }
 
+    function buidPathKilometr(item: any) {
+        const path = item?.path ? JSON.parse(item?.path) : []
+        const convertPath = path.map((item: any) => ({ lat: item[1], lng: item[1] }))
+        const distanceInMeters = getPathLength(convertPath);
+        const distanceInKm = (distanceInMeters / 1000).toFixed(2);
+        // console.log(distanceInKm, convertPath)
+        return `${distanceInKm} کیلومتر`
+    }
+
     function allLocationsFu(item: any, index: number) {
 
         return (
@@ -126,6 +137,8 @@ export default function LocationsPage() {
                         <Box >
                             طول جفرافیایی: {item.lng}
                         </Box>
+
+                        <Box>طول مسیر : {buidPathKilometr(item)}</Box>
 
                         <Box sx={{ width: "100%" }} display={"flex"} flexDirection={"column"} justifyContent={"center"} gap={1} mt={3}>
                             <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"} gap={1}>

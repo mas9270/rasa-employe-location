@@ -61,7 +61,7 @@ function ModalContent(props: { data: { active: boolean, info: any }, onClose: (d
 
 
     return (
-        <Box sx={{ width: "calc(100vw - 100px)", height: "calc(100vh - 150px)" }} display={"flex"} flexDirection={"column"}>
+        <Box sx={{ width: "calc(100vw - 100px)", height: "calc(100vh - 250px)" }} display={"flex"} flexDirection={"column"}>
             <MapContainer
                 center={[36.3206, 59.6168]}
                 zoom={12} // زوم پیشنهادی برای دیدن کامل شهر

@@ -168,7 +168,7 @@ function Form(props: { info: any, done: () => void, setLoading: any, loading: bo
     }, [currentLocationForm])
 
     return (
-        <Box width={"400px"}>
+        <Box sx={{ width: { xs: "300px", sm: "400px" } }}>
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
                 <Stack spacing={2} mt={1}>
                     <TextField
@@ -275,7 +275,7 @@ function GetLocation(props: { locationModalInfo: any, onClose: (locationId?: any
     function currentMap() {
         return (
             <Box
-                sx={{ width: "600px", height: "400px", position: "relative" }}
+                sx={{ width: { xs: "300px", sm: "400px", md: "600px", lg: "700px" }, height: "400px", position: "relative" }}
             >
                 <MapContainer
                     center={[36.3206, 59.6168]}

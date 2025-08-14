@@ -6,14 +6,15 @@ import { MapContainer, TileLayer, useMapEvents, Marker, Popup, Polyline } from "
 import { reactToastify } from "@/utils/toastify";
 import { DataGrid } from "@mui/x-data-grid";
 import CustomFieldSet from "@/components/ui/customFieldset";
-
+import { getPathLength } from "geolib";
 
 export default function UsersLocation() {
     const [locationId, setLocationId] = useState<any>(null)
 
     return (
-        <Box sx={{ width: "100%", height: "800px", maxHeight: "calc(100vh - 100px)" }} display={"flex"} gap={1}>
-            <Box sx={{ width: "50%", height: "100%" }}>
+        <Box sx={{ width: "100%", flex: 1 }} display={"flex"} gap={1} >
+
+            <Box sx={{ width: "50%", flex: 1 }} display={"flex"}>
                 <CustomFieldSet title="منطقه ها" width="100%" height="100%">
                     <Locations
                         locationId={locationId}
@@ -22,11 +23,12 @@ export default function UsersLocation() {
                 </CustomFieldSet>
             </Box>
 
-            <Box sx={{ width: "50%", height: "100%" }}>
+            <Box sx={{ width: "50%", flex: 1 }} display={"flex"}>
                 <CustomFieldSet title={`${locationId?.name ? `کاربران : ${locationId?.name}` : "همه کاربران"}`} width="100%" height="100%">
                     <UserByLocation locationId={locationId} setLocationId={setLocationId} />
                 </CustomFieldSet>
             </Box>
+
         </Box>
     )
 }
@@ -55,12 +57,21 @@ function Locations(props: { locationId: any, setLocationId: any }) {
             })
     }
 
+    function buidPathKilometr(item: any) {
+        const path = item?.path ? JSON.parse(item?.path) : []
+        const convertPath = path.map((item: any) => ({ lat: item[1], lng: item[1] }))
+        const distanceInMeters = getPathLength(convertPath);
+        const distanceInKm = (distanceInMeters / 1000).toFixed(2);
+        // console.log(distanceInKm, convertPath)
+        return `${distanceInKm} کیلومتر`
+    }
+
     useEffect(() => {
         getLocationList()
     }, [])
 
     return (
-        <Box sx={{ width: "100%", height: "100%", position: "relative" }} display={"flex"} flexDirection={"column"}>
+        <Box sx={{ width: "100%", height: "calc(100% - 50px)", position: "relative" }} display={"flex"} flexDirection={"column"}>
             <Box display={"flex"} justifyContent={"end"} gap={2} mb={2}>
                 <Button
                     disabled={currentLocationInfo ? false : true || loading}
@@ -71,96 +82,102 @@ function Locations(props: { locationId: any, setLocationId: any }) {
                     }}
                 >حذف نمایش مسیر {currentLocationInfo?.name}</Button>
             </Box>
-            <MapContainer
-                center={[36.3206, 59.6168]}
-                zoom={12} // زوم پیشنهادی برای دیدن کامل شهر
-                style={{ width: "100%", height: "100%" }}
-            >
-                {/* لایه نقشه */}
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                />
+            <Box width={"100%"} height={"100%"} flexGrow={1}>
+                <MapContainer
+                    center={[36.3206, 59.6168]}
+                    zoom={12} // زوم پیشنهادی برای دیدن کامل شهر
+                    style={{ width: "100%", height: "100%" }}
+                >
+                    {/* لایه نقشه */}
+                    <TileLayer
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    />
 
-                {allLocations && (
-                    allLocations.map((item: any, index: number) => {
-                        return (
-                            <Marker key={index} position={[item.lat, item.lng]} icon={ColoredMarker(locationId?.id === item.id ? "blue" : "green")}>
-                                <Popup>
-                                    <Box width={"100%"} display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} sx={{ direction: "rtl" }}>
-                                        <Box >
-                                            نام : {item?.name}
-                                        </Box>
-                                        <Box >
-                                            توضیحات : {item?.description}
-                                        </Box>
-                                        <Box >
-                                            عرض جعرافیایی : {item.lat}
-                                        </Box>
-                                        <Box >
-                                            طول جفرافیایی: {item.lng}
-                                        </Box>
-
-                                        <Box sx={{ width: "100%" }} display={"flex"} gap={1}>
-                                            <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"}>
-                                                <Button
-                                                    sx={{ textWrap: "nowrap" }}
-                                                    variant="contained"
-                                                    color="info"
-                                                    fullWidth
-                                                    size="small"
-                                                    onClick={() => {
-                                                        if (!item.path || (item.path && JSON.parse(item.path).length === 0)) {
-                                                            reactToastify({
-                                                                type: "warning",
-                                                                message: `مسیری برای ${item?.name} تعیین نشده است`
-                                                            })
-                                                        }
-                                                        else {
-                                                            setCurrentLocationInfo(item)
-                                                        }
-                                                    }}
-                                                >
-                                                    نمایش مسیر
-                                                </Button>
+                    {allLocations && (
+                        allLocations.map((item: any, index: number) => {
+                            return (
+                                <Marker key={index} position={[item.lat, item.lng]} icon={ColoredMarker(locationId?.id === item.id ? "blue" : "green")}>
+                                    <Popup>
+                                        <Box width={"100%"} display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} sx={{ direction: "rtl" }}>
+                                            <Box >
+                                                نام : {item?.name}
                                             </Box>
-                                            <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"}>
-                                                <Button variant="contained" onClick={() => { setLocationId(item) }} color="success" fullWidth size="small">
-                                                    انتخاب
-                                                </Button>
+                                            <Box >
+                                                توضیحات : {item?.description}
+                                            </Box>
+                                            <Box >
+                                                عرض جعرافیایی : {item.lat}
+                                            </Box>
+                                            <Box >
+                                                طول جفرافیایی: {item.lng}
+                                            </Box>
+
+                                            <Box>طول مسیر : {buidPathKilometr(item)}</Box>
+
+                                            <Box sx={{ width: "100%" }} display={"flex"} gap={1}>
+                                                <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"}>
+                                                    <Button
+                                                        sx={{ textWrap: "nowrap" }}
+                                                        variant="contained"
+                                                        color="info"
+                                                        fullWidth
+                                                        size="small"
+                                                        onClick={() => {
+                                                            if (!item.path || (item.path && JSON.parse(item.path).length === 0)) {
+                                                                reactToastify({
+                                                                    type: "warning",
+                                                                    message: `مسیری برای ${item?.name} تعیین نشده است`
+                                                                })
+                                                            }
+                                                            else {
+                                                                setCurrentLocationInfo(item)
+                                                            }
+                                                        }}
+                                                    >
+                                                        نمایش مسیر
+                                                    </Button>
+                                                </Box>
+                                                <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"}>
+                                                    <Button variant="contained" onClick={() => { setLocationId(item) }} color="success" fullWidth size="small">
+                                                        انتخاب
+                                                    </Button>
+                                                </Box>
                                             </Box>
                                         </Box>
-                                    </Box>
-                                </Popup>
-                            </Marker>
-                        )
-                    })
-                )}
+                                    </Popup>
+                                </Marker>
+                            )
+                        })
+                    )}
 
-                {currentLocationInfo && (
-                    <Polyline
-                        pathOptions={{ color: 'black' }}
-                        positions={currentLocationInfo.path ? JSON.parse(currentLocationInfo.path) : []} />
-                )}
-            </MapContainer>
-            {loading && (
-                <Box sx={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "100%",
-                    height: "100%",
-                    position: "absolute",
-                    right: 0,
-                    bottom: 0,
-                    left: 0,
-                    top: 0,
-                    zIndex: 100000,
-                    backgroundColor: "rgba(0,0,0,0.4)"
-                }}>
-                    <CircularProgress />
-                </Box>
-            )}
+                    {currentLocationInfo && (
+                        <Polyline
+                            pathOptions={{ color: 'black' }}
+                            positions={currentLocationInfo.path ? JSON.parse(currentLocationInfo.path) : []} />
+                    )}
+                </MapContainer>
+            </Box>
+            {
+                loading && (
+                    <Box sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "100%",
+                        height: "100%",
+                        position: "absolute",
+                        right: 0,
+                        bottom: 0,
+                        left: 0,
+                        top: 0,
+                        zIndex: 100000,
+                        backgroundColor: "rgba(0,0,0,0.4)"
+                    }}>
+                        <CircularProgress />
+                    </Box>
+                )
+            }
         </Box >
     )
 }
