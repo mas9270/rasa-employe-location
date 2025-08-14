@@ -1,0 +1,39 @@
+import L from "leaflet";
+import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
+import markerIcon from "leaflet/dist/images/marker-icon.png";
+import markerShadow from "leaflet/dist/images/marker-shadow.png";
+
+export const DefaultIcon1 = L.icon({
+  iconRetinaUrl: markerIcon2x?.src ?? markerIcon2x,
+  iconUrl: markerIcon?.src ?? markerIcon,
+  shadowUrl: markerShadow?.src ?? markerShadow,
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+
+});
+
+export const ColoredMarker = (color: "red" | "green" | "blue") => {
+  // رنگ دلخواه را انتخاب می‌کنیم
+  const fillColor =
+    color === "red" ? "#FF4136" :
+      color === "green" ? "#2ECC40" :
+        "#0074D9"; // blue پیش‌فرض
+
+  return L.divIcon({
+    html: `
+      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41">
+        <!-- سایه -->
+        <ellipse cx="12.5" cy="40" rx="12" ry="3" fill="rgba(0,0,0,0.3)" />
+        <!-- قطره -->
+        <path d="M12.5 0 C19 0 25 6 25 13 C25 24 12.5 41 12.5 41 C12.5 41 0 24 0 13 C0 6 6 0 12.5 0 Z" 
+              fill="${fillColor}" stroke="#000" stroke-width="1"/>
+      </svg>
+    `,
+    className: "",
+    iconSize: [25, 41],      // اندازه آیکون مشابه Leaflet
+    iconAnchor: [12, 41],    // نوک پایین آیکون روی مختصات
+    popupAnchor: [1, -34],   // popup درست در بالا
+  });
+};
