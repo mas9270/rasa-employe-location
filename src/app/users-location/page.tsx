@@ -12,7 +12,7 @@ export default function UsersLocation() {
     const [locationId, setLocationId] = useState<any>(null)
 
     return (
-        <Box sx={{ width: "100%", height: "800px", minHeight: "400px" }} display={"flex"} gap={1}>
+        <Box sx={{ width: "100%", height: "800px", maxHeight: "calc(100vh - 100px)" }} display={"flex"} gap={1}>
             <Box sx={{ width: "50%", height: "100%" }}>
                 <CustomFieldSet title="منطقه ها" width="100%" height="100%">
                     <Locations
