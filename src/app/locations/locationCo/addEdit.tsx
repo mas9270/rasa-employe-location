@@ -80,7 +80,7 @@ export default function AddEdit(props: AddEdit) {
                         setLoading(false)
                     }
                     else {
-                        fetch(`/api/locations/${formData.id}`, {
+                        fetch(`/api/locations/${data.info?.id}`, {
                             method: "PUT",
                             body: JSON.stringify({
                                 name: formData.name.trim(),

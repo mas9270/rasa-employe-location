@@ -68,7 +68,7 @@ export default function AddEdit(props: AddEdit) {
         fetch("/api/paths")
             .then((res) => res.json())
             .then((res) => {
-
+                
                 if (data.info) {
                     const allPaths = res
                     const findPath = allPaths.find((item: any) => item.name === dataForm?.name)
@@ -86,7 +86,7 @@ export default function AddEdit(props: AddEdit) {
                         setLoading(false)
                     }
                     else {
-                        fetch(`/api/paths/${dataForm.id}`, {
+                        fetch(`/api/paths/${data.info?.id}`, {
                             method: "PUT",
                             body: JSON.stringify({
                                 name: dataForm.name.trim(),
