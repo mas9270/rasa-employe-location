@@ -52,6 +52,16 @@ export default function ViewPath(props: { structureInfo: StructureInfo, setStruc
                                     })
                                     return
                                 }
+                                setStructureInfo((prevState) => {
+                                    return {
+                                        ...prevState,
+                                        paths: {
+                                            ...prevState.paths,
+                                            mode: isAddEdit.active ? "view" : "add",
+                                            pathList: []
+                                        }
+                                    }
+                                })
                                 setIsAddEdit({ active: true, info: params.row })
                             }}
                         />
@@ -204,12 +214,12 @@ export default function ViewPath(props: { structureInfo: StructureInfo, setStruc
                     columnHeaderSortIconLabel: "مرتب‌سازی",
                 }}
                 onRowClick={(e) => {
-                    setStructureInfo((prevState)=>{
+                    setStructureInfo((prevState) => {
                         return {
                             ...prevState,
-                            paths :{
+                            paths: {
                                 ...prevState.paths,
-                                clickPathInfo : e.row
+                                clickPathInfo: e.row
                             }
                         }
                     })

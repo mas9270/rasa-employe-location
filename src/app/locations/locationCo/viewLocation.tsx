@@ -54,6 +54,16 @@ export default function ViewLocation(props: { structureInfo: StructureInfo, setS
                                     })
                                     return
                                 }
+                                setStructureInfo((prevState) => {
+                                    return {
+                                        ...prevState,
+                                        locations: {
+                                            ...prevState.locations,
+                                            mode: isAddEdit.active ? "view" : "add",
+                                            latLng: []
+                                        }
+                                    }
+                                })
                                 setIsAddEdit({ active: true, info: params.row })
                             }}
                         />
