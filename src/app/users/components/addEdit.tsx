@@ -15,7 +15,7 @@ const schema = z.object({
     name: z.string().min(1, 'نام حداقل باید 1 کاراکتر باشد'),
     nationalCode: z.string().min(10, 'کد ملی باید 10 کاراکتر باشد').max(10, "کد ملی باید 10 کاراکتر باشد"),
     description: z.string(),
-    location: z.string().min(1, 'شناسه منطقه را وارد کنید')
+    location: z.string().min(1, 'شناسه جایگاه را وارد کنید')
 });
 
 export default function AddEditModal(props: { data: { active: boolean, info: any }, onClose: (done?: boolean) => void }) {
@@ -201,7 +201,7 @@ function Form(props: { info: any, done: () => void, setLoading: any, loading: bo
                                 setLocationModalInfo({ active: true, info: info })
                             }}
                             sx={{ cursor: "pointer" }}
-                            label="شناسه منطقه"
+                            label="شناسه جایگاه"
                             type='text'
                             slotProps={{
                                 input: {
@@ -297,21 +297,28 @@ function GetLocation(props: { locationModalInfo: any, onClose: (locationId?: any
                                     icon={ColoredMarker(+currentLocationForm === item.id ? "blue" : "green")}
                                 >
                                     <Popup>
-                                        <Box width={"100%"} display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} sx={{ direction: "rtl" }}>
-                                            <Box >
+                                        <Box
+                                            width={"100%"}
+                                            display={"flex"}
+                                            flexDirection={"column"}
+                                            justifyContent={"center"}
+                                            alignItems={"center"}
+                                            sx={{ direction: "rtl", fontFamily: "IRANSansX" }}
+                                        >
+                                            <Box mt={1}>
                                                 نام : {item?.name}
                                             </Box>
-                                            <Box >
+                                            <Box mt={1}>
                                                 توضیحات : {item?.description}
                                             </Box>
-                                            <Box >
+                                            <Box mt={1}>
                                                 عرض جعرافیایی : {item.lat}
                                             </Box>
-                                            <Box >
+                                            <Box mt={1}>
                                                 طول جفرافیایی: {item.lng}
                                             </Box>
 
-                                            <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"} gap={1} mt={3}>
+                                            <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"} gap={1} mt={1}>
                                                 <Button variant="contained" onClick={() => { onClose(item.id) }} color="success" fullWidth>
                                                     انتخاب
                                                 </Button>

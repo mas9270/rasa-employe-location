@@ -15,7 +15,7 @@ import { reactToastify } from '@/utils/toastify';
 
 type Anchor = 'top' | 'left' | 'bottom' | 'right';
 
-export default function SwipeableTemporaryDrawer() {
+export default function LayoutDrawer() {
 
   const pathname = usePathname()
   const [isVerify, setIsVeryfy] = useState<boolean>(false)
@@ -61,9 +61,9 @@ function SwipeableTemporaryDrawerContent() {
 
 
   const currentList = [
-    { path: "/users-location", text: "جایگاه کاربران" },
-    { path: "/users", text: "کاربران" },
-    { path: "/locations", text: "جایگاه ها" },
+    { path: "/users-location", text: "مسیرها و جایگاه کارمندان" },
+    { path: "/users", text: "کارمندان" },
+    { path: "/locations", text: "مسیر ها و جایگاه ها" },
   ]
 
   const isXs = useMediaQuery(theme.breakpoints.only('xs'));

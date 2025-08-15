@@ -2,7 +2,7 @@
 import { Box, AppBar, Toolbar, Typography } from '@mui/material'
 
 import ThemeSwitch from '../../ui/themeSwitch'
-import SwipeableTemporaryDrawer from '../../ui/layoutDrawer'
+import LayoutDrawer from '../../ui/layoutDrawer'
 import LogOutBtn from '@/components/ui/logOutbtn'
 
 
@@ -25,19 +25,10 @@ export default function Header() {
                             width: '100%',
                         }}>
                             <Box sx={{ paddingRight: "5px", paddingLeft: "5px" }}>
-                                <SwipeableTemporaryDrawer />
+                                <LayoutDrawer />
                             </Box>
                         </Box>
-                        <Box sx={{
-                            display: 'flex',
-                            justifyContent: "center",
-                            alignItems: 'center',
-                            width: '100%',
-                        }}>
-                            <Box sx={{ paddingRight: "5px", paddingLeft: "5px" }}>
-                                <Typography variant='h6'>منطقه کارمندان</Typography>
-                            </Box>
-                        </Box>
+                        
                         <Box
                             sx={{
                                 display: 'flex',

@@ -4,14 +4,12 @@ import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET() {
-    const locations = await prisma.locations.findMany({
+    const locations = await prisma.paths.findMany({
         select: {
             id: true,
             name: true,
             description: true,
-            lat: true,
-            lng: true,
-            pathId: true
+            path: true
         }
     });
     return NextResponse.json(locations);
@@ -19,13 +17,11 @@ export async function GET() {
 
 export async function POST(req: Request) {
     const data = await req.json();
-    const newLocation = await prisma.locations.create({
+    const newLocation = await prisma.paths.create({
         data: {
             name: data.name,
             description: data.description,
-            lat: data.lat,
-            lng: data.lng,
-            pathId: data.path,
+            path: data.path,
         }
     });
     return NextResponse.json(newLocation);

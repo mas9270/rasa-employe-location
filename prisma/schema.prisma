@@ -28,6 +28,14 @@ model Locations {
   description String
   lat         Float
   lng         Float
+  pathId      Int
+  createdAt   DateTime @default(now())
+}
+
+model Paths {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String
   path        Json
   createdAt   DateTime @default(now())
 }

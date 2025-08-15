@@ -1,59 +1,60 @@
 "use client"
-import React, { useState, useMemo, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
+import { Add, Edit, Delete } from "@mui/icons-material"
 import { DataGrid } from "@mui/x-data-grid";
 import { Box, Button } from "@mui/material";
-import { Add, Edit, Delete } from "@mui/icons-material"
-import AddEditModal from "./components/addEdit";
-import DeleteModal from "./components/delete";
+import { reactToastify } from "@/utils/toastify";
+import { StructureInfo, StructureInfoSet } from "../locationTypes";
+import DeleteModal from "./delete";
+import AddEditModal from "./addEdit";
 
 
-
-
-
-
-export default function UsersPage() {
+export default function ViewPath(props: { structureInfo: StructureInfo, setStructureInfo: StructureInfoSet }) {
+    const { structureInfo, setStructureInfo } = props
 
     const [rows, setRows] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true)
-    const [isModal, setIsModal] = useState<{ active: boolean, info: any }>({ active: false, info: null })
+    const [isAddEdit, setIsAddEdit] = useState<{ active: boolean, info: any }>({ active: false, info: null })
     const [isDelete, setIsDelete] = useState<{ active: boolean, info: any }>({ active: false, info: null })
     const columns = [
-        { field: "id", headerName: "شناسه", width: 150 },
-        { field: "name", headerName: "نام", width: 200 },
-        { field: "nationalCode", headerName: "کدملی", width: 300 },
-        { field: "locationId", headerName: "شناسه جایگاه", width: 300 },
+        { field: "id", headerName: "شناسه", width: 50 },
+        { field: "name", headerName: "نام", width: 100 },
+        { field: "description", headerName: "توضیحات", width: 100 },
         {
             field: "actionBtn",
             headerName: "عملیات",
             width: 80,
             renderCell: (params: any) => {
-
                 return (
                     <Box display={"flex"} alignItems={"center"} height={"100%"} gap={1}>
-                        {/* <Button
-                            variant="contained"
-                            onClick={() => { setIsDelete({ active: true, info: params.row }) }}
-                            color='error'
-                            size="small"
-                        > */}
                         <Delete
                             color="error"
                             sx={{ cursor: "pointer" }}
-                            onClick={() => { setIsDelete({ active: true, info: params.row }) }}
+                            onClick={() => {
+                                if (loading || structureInfo.locations.mode !== "view") {
+                                    reactToastify({
+                                        type: "warning",
+                                        message: "حالت افزودن یا ویرایش جایگاه فعال است"
+                                    })
+                                    return
+                                }
+                                setIsDelete({ active: true, info: params.row })
+                            }}
                         />
-                        {/* </Button> */}
-                        {/* <Button
-                            variant="contained"
-                            onClick={() => { setIsModal({ active: true, info: params.row }) }}
-                            color='info'
-                            size="small"
-                        > */}
                         <Edit
                             color="info"
                             sx={{ cursor: "pointer" }}
-                            onClick={() => { setIsModal({ active: true, info: params.row }) }}
+                            onClick={() => {
+                                if (loading || structureInfo.locations.mode !== "view") {
+                                    reactToastify({
+                                        type: "warning",
+                                        message: "حالت افزودن یا ویرایش جایگاه فعال است"
+                                    })
+                                    return
+                                }
+                                setIsAddEdit({ active: true, info: params.row })
+                            }}
                         />
-                        {/* </Button> */}
                     </Box>
                 )
             }
@@ -62,45 +63,60 @@ export default function UsersPage() {
 
     async function getData() {
         setLoading(true)
-        const res = await fetch("/api/users");
-        setRows(await res.json());
-        setLoading(false)
-        // setTimeout(() => {
-        // api.get("/users")
-        //     .then((res) => {
-        //         setRows(res.data)
-        //         setLoading(false)
-        //     })
-        //     .catch((err) => {
-        //         setRows([])
-        //         setLoading(false)
-        //     })
-        // // }, 2000);
+        fetch("/api/paths")
+            .then((res) => res.json())
+            .then((res) => {
+                setRows(res)
+                setLoading(false)
+            })
+            .catch((err) => {
+                reactToastify({
+                    type: "error",
+                    message: "خطایی رخ داده است دوباره تلاش کنید"
+                })
+                setLoading(false)
+            })
     }
 
     function actionBtn() {
         return (
-            <Box component={"div"} width={"100%"} paddingBottom={"20px"} display={"flex"} gap={2}>
+            <Box component={"div"} width={"100%"} display={"flex"} gap={2} mb={1}>
                 <Button
+                    disabled={loading || structureInfo.locations.mode !== "view" || structureInfo.loading}
+                    size="small"
                     variant="contained"
                     onClick={() => {
-                        setIsModal({ active: true, info: null })
+                        setStructureInfo((prevState) => {
+                            return {
+                                ...prevState,
+                                paths: {
+                                    ...prevState.paths,
+                                    mode: isAddEdit.active ? "view" : "add",
+                                    pathList: []
+                                }
+                            }
+                        })
+                        setIsAddEdit({ active: !isAddEdit.active, info: null })
                     }}
-                >افزودن</Button>
-                <Button
-                    variant="contained"
-                    color="success"
-                    onClick={() => {
-                        getData()
-                    }}
-                >دریافت لیست کاربران</Button>
+                    color={isAddEdit.active ? "error" : "success"}
+                >{isAddEdit.active ? "انصراف" : "افزودن"}</Button>
+                {!isAddEdit.active && (
+                    <Button
+                        disabled={loading || structureInfo.locations.mode !== "view"}
+                        size="small"
+                        variant="contained"
+                        color="success"
+                        onClick={() => {
+                            getData()
+                        }}
+                    >دریافت لیست</Button>
+                )}
             </Box>
         )
     }
 
     function dataGrid() {
         return (
-            // <Box sx={{ width: "100%", flex: 1, minHeight: 0 }}>
             <DataGrid
                 loading={loading}
                 sx={{ width: "100%", minHeight: 0, flex: 1 }}
@@ -112,8 +128,6 @@ export default function UsersPage() {
                     pagination: { paginationModel: { pageSize: 5, page: 0 } },
                 }}
                 localeText={{
-                    // filterOperatorDoesNotContain: "wwww",
-                    // filterOperatorDoesNotEqual: "wwww",
                     // filterPanelLogicOperator: "Ww",
                     filterPanelOperator: "شامل",
                     filterOperatorDoesNotContain: "شامل نیست",
@@ -189,8 +203,21 @@ export default function UsersPage() {
                     booleanCellFalseLabel: "خیر",
                     columnHeaderSortIconLabel: "مرتب‌سازی",
                 }}
+                onRowClick={(e) => {
+                    setStructureInfo((prevState)=>{
+                        return {
+                            ...prevState,
+                            paths :{
+                                ...prevState.paths,
+                                clickPathInfo : e.row
+                            }
+                        }
+                    })
+                    // console.log(e)
+                }}
+
+
             />
-            // </Box >  
         )
     }
 
@@ -199,15 +226,28 @@ export default function UsersPage() {
         return (
             <AddEditModal
                 data={{
-                    active: isModal.active,
-                    info: isModal.info
+                    active: isAddEdit.active,
+                    info: isAddEdit.info,
+                    structureInfo: structureInfo,
+                    setStructureInfo: setStructureInfo
                 }}
                 onClose={(done) => {
-                    setIsModal({
+                    setIsAddEdit({
                         active: false,
                         info: null
                     })
                     if (done) {
+                        setStructureInfo((prevState) => {
+                            return {
+                                ...prevState,
+                                loading: false,
+                                paths: {
+                                    ...prevState.paths,
+                                    mode: isAddEdit.active ? "view" : "add",
+                                    pathList: []
+                                }
+                            }
+                        })
                         getData()
                     }
                 }}
@@ -243,9 +283,8 @@ export default function UsersPage() {
     return (
         <Box sx={{ width: "100%", flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
             {actionBtn()}
-            {addEditModal()}
             {deleteModal()}
-            {dataGrid()}
+            {isAddEdit.active ? addEditModal() : dataGrid()}
         </Box>
-    );
+    )
 }

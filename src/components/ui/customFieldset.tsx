@@ -20,12 +20,12 @@ const CustomFieldset = styled("fieldset")(({ theme }) => ({
     },
 }));
 
-export default function CustomFieldSet(props: { children?: React.ReactNode, width?: string, title?: string, height?: string }) {
-    const { children, width, height, title } = props
+export default function CustomFieldSet(props: { children?: React.ReactNode, width?: string, title?: string, height?: string, flex?: number }) {
+    const { children, width, height, title, flex } = props
     const theme = useTheme();
 
     return (
-        <CustomFieldset sx={{ width: width ? width : "auto", height: height ? height : "auto", padding: "10px" }} >
+        <CustomFieldset sx={{ width: width ? width : "auto", height: height ? height : "auto", padding: "10px", flex: flex, display: 'flex', flexDirection: "column" }} >
             <legend>{title ? title : ""}</legend>
             {children}
         </CustomFieldset>

@@ -89,7 +89,7 @@ function ModalContent(props: { data: { active: boolean, info: any }, onClose: (d
                     }}
                 />
 
-                <Polyline pathOptions={{ color: 'black' }} positions={pathList} />
+                <Polyline pathOptions={{ color: '#0074D9', weight: 5, opacity: 0.8 }} positions={pathList} />
                 <ChangeCursor />
             </MapContainer>
         )

@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 export async function PUT(req: Request, { params }: { params: { id: string } }) {
     const data = await req.json();
-    const updated = await prisma.locations.update({
+    const updated = await prisma.paths.update({
         where: { id: Number(params.id) },
         data
     });
@@ -13,13 +13,8 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
-    await prisma.locations.delete({
+    await prisma.paths.delete({
         where: { id: Number(params.id) }
     });
     return NextResponse.json({ message: "Deleted" });
-}
-
-export async function GET(req: Request, { params }: { params: { id: string } }) {
-    const pathInfo = await prisma.paths.findUnique({ where: { id: +params.id } });
-    return NextResponse.json(pathInfo);
 }

@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
-import { DefaultIcon1, ColoredMarker } from "@/utils/leafletConfig";
+import { ColoredMarker } from "@/utils/leafletConfig";
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import { reactToastify } from "@/utils/toastify";
 import { DataGrid } from "@mui/x-data-grid";
@@ -10,24 +10,25 @@ import { getPathLength } from "geolib";
 import L from "leaflet";
 import "leaflet-polylinedecorator";
 
+
 export default function UsersLocation() {
-    const [locationId, setLocationId] = useState<any>(null)
+    const [locationInfo, setLocationInfo] = useState<any>(null)
 
     return (
         <Box sx={{ width: "100%", flex: 1 }} display={"flex"} gap={1} >
 
             <Box sx={{ width: "50%", flex: 1 }} display={"flex"}>
-                <CustomFieldSet title="منطقه ها" width="100%" height="100%">
+                <CustomFieldSet title="مسیرها وجایگاه ها" width="100%" height="100%">
                     <Locations
-                        locationId={locationId}
-                        setLocationId={setLocationId}
+                        locationInfo={locationInfo}
+                        setLocationInfo={setLocationInfo}
                     />
                 </CustomFieldSet>
             </Box>
 
             <Box sx={{ width: "50%", flex: 1 }} display={"flex"}>
-                <CustomFieldSet title={`${locationId?.name ? `کاربران : ${locationId?.name}` : "همه کاربران"}`} width="100%" height="100%">
-                    <UserByLocation locationId={locationId} setLocationId={setLocationId} />
+                <CustomFieldSet title={`${locationInfo?.name ? `کاربران : ${locationInfo?.name}` : "همه کاربران"}`} width="100%" height="100%">
+                    <UserByLocation locationInfo={locationInfo} setLocationInfo={setLocationInfo} />
                 </CustomFieldSet>
             </Box>
 
@@ -36,65 +37,60 @@ export default function UsersLocation() {
 }
 
 
-function Locations(props: { locationId: any, setLocationId: any }) {
-    const { locationId, setLocationId } = props
+function Locations(props: { locationInfo: any, setLocationInfo: any }) {
+    const { locationInfo, setLocationInfo } = props
     const [allLocations, setAllLocations] = useState<any>(null)
+    const [allPath, setAppPath] = useState<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
-    const [currentLocationInfo, setCurrentLocationInfo] = useState<any>(null)
+    const [selectedPath, setSelectedPath] = useState<{ pathInfo: any, locations: any[] }>({ pathInfo: null, locations: [] })
 
-    function getLocationList() {
+
+    async function getLocationList() {
         setLoading(true)
-        fetch("/api/locations")
-            .then((res) => res.json())
-            .then((res) => {
-                setAllLocations(res)
-                setLoading(false)
-            })
-            .catch(() => {
-                reactToastify({
-                    type: "error",
-                    message: "خطایی رخ داده است دوباره تلاش کنید"
-                })
-                setLoading(false)
-            })
-    }
-
-    function buidPathKilometr(item: any) {
-        const path = item?.path ? JSON.parse(item?.path) : []
-        const convertPath = path.map((item: any) => ({ lat: item[1], lng: item[1] }))
-        const distanceInMeters = getPathLength(convertPath);
-        const distanceInKm = (distanceInMeters / 1000).toFixed(2);
-        // console.log(distanceInKm, convertPath)
-        return `${distanceInKm} کیلومتر`
+        const paths = await fetch("/api/paths")
+        const locations = await fetch("/api/locations")
+        setAppPath(await paths.json())
+        setAllLocations(await locations.json())
+        setLoading(false)
     }
 
     useEffect(() => {
         getLocationList()
     }, [])
 
+    useEffect(() => {
+        setLocationInfo(null)
+    }, [selectedPath.pathInfo])
+
     return (
-        <Box sx={{ width: "100%", height: "calc(100% - 50px)", position: "relative" }} display={"flex"} flexDirection={"column"}>
+        <Box sx={{ width: "100%", height: "100%", position: "relative" }} display={"flex"} flexDirection={"column"}>
             <Box display={"flex"} justifyContent={"end"} gap={2} mb={2}>
                 <Button
-                    disabled={currentLocationInfo ? false : true || loading}
+                    disabled={loading}
+                    loading={loading}
                     size={"small"}
                     variant="contained"
                     onClick={() => {
-                        setCurrentLocationInfo(null)
+                        getLocationList()
                     }}
-                >حذف نمایش مسیر {currentLocationInfo?.name}</Button>
+                >
+                    دریافت اطلاعات
+                </Button>
                 <Button
-                    disabled={locationId ? false : true || loading}
+                    disabled={loading || (!locationInfo)}
+                    loading={loading}
                     size={"small"}
                     variant="contained"
                     onClick={() => {
-                        setLocationId(null)
+                        setLocationInfo(null)
                     }}
-                >حذف فیلتر {locationId  ?.name}</Button>
+                >
+                    {locationInfo ? `حذف فیلر ${locationInfo.name}` : "حذف فیلتر کاربران"}
+                </Button>
             </Box>
             <Box width={"100%"} sx={{ display: "flex", flex: 1 }}>
                 <MapContainer
-                    center={[36.3206, 59.6168]}
+                    center={[36.3206, 59.5600]}
                     zoom={12} // زوم پیشنهادی برای دیدن کامل شهر
                     style={{ width: "100%", height: "100%" }}
                 >
@@ -104,98 +100,143 @@ function Locations(props: { locationId: any, setLocationId: any }) {
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     />
 
-                    {allLocations && (
-                        allLocations.map((item: any, index: number) => {
-                            return (
-                                <Marker key={index} position={[item.lat, item.lng]} icon={ColoredMarker(locationId?.id === item.id ? "blue" : "green")}>
-                                    <Popup>
-                                        <Box width={"100%"} display={"flex"} flexDirection={"column"} justifyContent={"center"} alignItems={"center"} sx={{ direction: "rtl" }}>
-                                            <Box >
-                                                نام : {item?.name}
-                                            </Box>
-                                            <Box >
-                                                توضیحات : {item?.description}
-                                            </Box>
-                                            <Box >
-                                                عرض جعرافیایی : {item.lat}
-                                            </Box>
-                                            <Box >
-                                                طول جفرافیایی: {item.lng}
-                                            </Box>
+                    {allPath && (allPath.map((item: any, index: number) =>
+                        <ViewPath
+                            key={index}
+                            item={item}
+                            selectedPath={selectedPath}
+                            setSelectedPath={setSelectedPath}
+                            allLocations={allLocations}
+                            locationInfo={locationInfo}
+                            setLocationInfo={setLocationInfo}
+                        />))}
 
-                                            <Box>طول مسیر : {buidPathKilometr(item)}</Box>
-
-                                            <Box sx={{ width: "100%" }} display={"flex"} gap={1}>
-                                                <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"}>
-                                                    <Button
-                                                        sx={{ textWrap: "nowrap" }}
-                                                        variant="contained"
-                                                        color="info"
-                                                        fullWidth
-                                                        size="small"
-                                                        onClick={() => {
-                                                            if (!item.path || (item.path && JSON.parse(item.path).length === 0)) {
-                                                                reactToastify({
-                                                                    type: "warning",
-                                                                    message: `مسیری برای ${item?.name} تعیین نشده است`
-                                                                })
-                                                            }
-                                                            else {
-                                                                setCurrentLocationInfo(item)
-                                                            }
-                                                        }}
-                                                    >
-                                                        نمایش مسیر
-                                                    </Button>
-                                                </Box>
-                                                <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"}>
-                                                    <Button variant="contained" onClick={() => { setLocationId(item) }} color="success" fullWidth size="small">
-                                                        انتخاب
-                                                    </Button>
-                                                </Box>
-                                            </Box>
-                                        </Box>
-                                    </Popup>
-                                </Marker>
-                            )
-                        })
-                    )}
-
-                    {currentLocationInfo && (
-                        <Polyline
-                            pathOptions={{ color: 'black' }}
-                            positions={currentLocationInfo.path ? JSON.parse(currentLocationInfo.path) : []} />
-                    )}
-
-                    <PolylineWithArrows positions={currentLocationInfo} />
                 </MapContainer>
             </Box>
-            {
-                loading && (
-                    <Box sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        width: "100%",
-                        height: "100%",
-                        position: "absolute",
-                        right: 0,
-                        bottom: 0,
-                        left: 0,
-                        top: 0,
-                        zIndex: 100000,
-                        backgroundColor: "rgba(0,0,0,0.4)"
-                    }}>
-                        <CircularProgress />
-                    </Box>
-                )
-            }
         </Box >
     )
 }
 
-function UserByLocation(props: { locationId: any, setLocationId: any }) {
-    const { locationId, setLocationId } = props
+function ViewPath(props: { item: any, selectedPath: any, setSelectedPath: any, allLocations: any, locationInfo: any, setLocationInfo: any }) {
+    const { item, selectedPath, setSelectedPath, allLocations, locationInfo, setLocationInfo } = props
+
+
+    return (
+        <>
+            {selectedPath.locations && selectedPath.locations.length !== 0 &&
+                selectedPath.locations.map((item: any) => {
+                    return (
+                        <Marker
+                            position={[item.lat, item.lng]}
+                            icon={ColoredMarker(locationInfo?.id === item.id ? "red" : "green")}
+                        >
+                            <Popup>
+                                <Box
+                                    width={"100%"}
+                                    display={"flex"}
+                                    flexDirection={"column"}
+                                    justifyContent={"center"}
+                                    alignItems={"center"}
+                                    sx={{ direction: "rtl", fontFamily: "IRANSansX" }}
+                                >
+                                    <Box mt={1}>نام : {item?.name}</Box>
+                                    <Box mt={1}>توضیحات : {item?.description}</Box>
+                                    <Box mt={1}>عرض جعرافیایی : {item.lat}</Box>
+                                    <Box mt={1}>طول جفرافیایی: {item.lng}</Box>
+                                    <Box sx={{ width: "100%" }} display={"flex"} gap={1} mt={1}>
+                                        <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"}>
+                                            <Button variant="contained" onClick={() => { setLocationInfo(item) }} color="success" fullWidth size="small">
+                                                انتخاب
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Popup>
+                        </Marker>
+                    )
+                })
+            }
+            <Polyline
+                pathOptions={{ color: selectedPath?.pathInfo?.id === item.id ? "green" : '#0074D9', weight: 5, opacity: 0.8 }}
+                positions={item.path ? JSON.parse(item.path) : []}
+            >
+                <Popup>
+                    <Box
+                        width={"100%"}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                        sx={{ direction: "rtl", fontFamily: "IRANSansX" }}
+                    >
+                        <Box mt={1}>نام : {item?.name}</Box>
+                        <Box mt={1}>توضیحات : {item?.description}</Box>
+                        <Box mt={1}>طول مسیر : {buidPathKilometr(item.path ? JSON.parse(item.path) : [])}</Box>
+                        <Box sx={{ width: "100%" }} display={"flex"} gap={1} mt={1}>
+                            <Box sx={{ width: "100%" }} display={"flex"} justifyContent={"center"}>
+                                <Button
+                                    variant="contained"
+                                    onClick={() => {
+                                        setSelectedPath(() => {
+                                            const pathLocation = allLocations.filter((item1: any) => item1.pathId === item.id)
+                                            return {
+                                                pathInfo: item,
+                                                locations: pathLocation
+                                            }
+                                        })
+                                    }}
+                                    color="success"
+                                    fullWidth
+                                    size="small"
+                                >
+                                    نمایش جایگاه ها
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Popup>
+            </Polyline>
+            <PolylineWithArrows positions={item.path ? JSON.parse(item.path) : []} />
+        </>
+    )
+}
+
+function buidPathKilometr(path: any) {
+    const convertPath = path.map((item: any) => ({ lat: item[1], lng: item[1] }))
+    const distanceInMeters = getPathLength(convertPath);
+    const distanceInKm = (distanceInMeters / 1000).toFixed(2);
+    return `${distanceInKm} کیلومتر`
+}
+
+function PolylineWithArrows({ positions }: { positions: any }) {
+    const map = useMap();
+
+    useEffect(() => {
+        const decorator = L.polylineDecorator(L.polyline(positions), {
+            patterns: [
+                {
+                    offset: 0,
+                    repeat: 50, // فاصله بین فلش‌ها (پیکسل)
+                    symbol: L.Symbol.arrowHead({
+                        pixelSize: 10,
+                        polygon: false,
+                        pathOptions: { stroke: true, color: "red" },
+                    }),
+                },
+            ],
+        });
+        decorator.addTo(map);
+
+        return () => {
+            map.removeLayer(decorator);
+        };
+    }, [map, positions]);
+
+    return null
+}
+
+function UserByLocation(props: { locationInfo: any, setLocationInfo: any }) {
+    const { locationInfo, setLocationInfo } = props
     const [rows, setRows] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true)
     const columns = [
@@ -209,9 +250,9 @@ function UserByLocation(props: { locationId: any, setLocationId: any }) {
         setLoading(true)
         const res = await fetch("/api/users");
         const res1 = await res.json()
-        if (locationId) {
+        if (locationInfo) {
             setRows(() => {
-                const filter = res1.filter((item: any) => item.locationId === locationId.id)
+                const filter = res1.filter((item: any) => item.locationId === locationInfo?.id)
                 return filter
             })
         }
@@ -223,7 +264,7 @@ function UserByLocation(props: { locationId: any, setLocationId: any }) {
 
     useEffect(() => {
         getData()
-    }, [locationId])
+    }, [locationInfo])
 
     return (
         <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
@@ -323,32 +364,3 @@ function UserByLocation(props: { locationId: any, setLocationId: any }) {
     )
 }
 
-function PolylineWithArrows({ positions }: { positions: any }) {
-    const map = useMap();
-
-
-
-    useEffect(() => {
-        positions = positions?.path ? JSON.parse(positions.path) : []
-        const decorator = L.polylineDecorator(L.polyline(positions), {
-            patterns: [
-                {
-                    offset: 0,
-                    repeat: 50, // فاصله بین فلش‌ها (پیکسل)
-                    symbol: L.Symbol.arrowHead({
-                        pixelSize: 10,
-                        polygon: false,
-                        pathOptions: { stroke: true, color: "red" },
-                    }),
-                },
-            ],
-        });
-        decorator.addTo(map);
-
-        return () => {
-            map.removeLayer(decorator);
-        };
-    }, [map, positions]);
-
-    return null
-}

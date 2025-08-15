@@ -23,12 +23,20 @@ export const ColoredMarker = (color: "red" | "green" | "blue") => {
 
   return L.divIcon({
     html: `
-      <svg xmlns="http://www.w3.org/2000/svg" width="25" height="41" viewBox="0 0 25 41">
-        <!-- سایه -->
-        <ellipse cx="12.5" cy="40" rx="12" ry="3" fill="rgba(0,0,0,0.3)" />
-        <!-- قطره -->
-        <path d="M12.5 0 C19 0 25 6 25 13 C25 24 12.5 41 12.5 41 C12.5 41 0 24 0 13 C0 6 6 0 12.5 0 Z" 
-              fill="${fillColor}" stroke="#000" stroke-width="1"/>
+      <svg width="25" height="41" viewBox="0 0 25 41" xmlns="http://www.w3.org/2000/svg">
+        <!-- سایه زمین -->
+        <ellipse cx="12.5" cy="39" rx="8" ry="3" fill="rgba(0,0,0,0.4)" />
+
+        <!-- قطره اصلی -->
+        <path d="M12.5 0 C19 0 25 6 25 13 C25 24 12.5 41 12.5 41 C12.5 41 0 24 0 13 C0 6 6 0 12.5 0 Z"
+              fill="${fillColor}" stroke="#660000" stroke-width="1" />
+
+        <!-- هایلایت براق سه‌بعدی -->
+        <path d="M12.5 0 C19 0 25 6 25 13 C25 24 12.5 41 12.5 41 C12.5 41 0 24 0 13 C0 6 6 0 12.5 0 Z"
+              fill="white" fill-opacity="0.15" />
+
+        <!-- دایره سفید کوچک داخل برای عمق -->
+        <circle cx="12.5" cy="13" r="4" fill="white" fill-opacity="0.4" />
       </svg>
     `,
     className: "",
