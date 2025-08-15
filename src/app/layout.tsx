@@ -73,8 +73,8 @@ const iranSanse = localFont({
 
 
 export const metadata: Metadata = {
-  title: "رسا جوبولی",
-  description: "تعیین منطفه کارکنان",
+  title: "منطقه کارمندان",
+  description: "تعیین منطقه و مسیر کارمندان",
 };
 
 export default function RootLayout({
@@ -85,7 +85,7 @@ export default function RootLayout({
   return (
     <html lang="fa" dir="rtl">
       <body className={`${iranSanse.className}`}>
-      {/* <body > */}
+        {/* <body > */}
         <StoreProvider>
           <MuiProviders>
             <CssBaseline />

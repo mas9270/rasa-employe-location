@@ -51,21 +51,12 @@ function ModalContent(props: { data: { active: boolean, info: any }, onClose: (d
             })
     }
 
-
-    useEffect(() => {
-
-        if (data.info?.path) {
-            setPathlist(JSON.parse(data.info.path))
-        }
-    }, [data])
-
-
-    return (
-        <Box sx={{ width: "calc(100vw - 100px)", height: "calc(100vh - 250px)" }} display={"flex"} flexDirection={"column"}>
+    function mapContent() {
+        return (
             <MapContainer
                 center={[36.3206, 59.6168]}
                 zoom={12} // زوم پیشنهادی برای دیدن کامل شهر
-                style={{ width: "100%", height: "calc(100vh - 200px)" }}
+                style={{ width: "100%", height: "100%" }}
             >
                 {/* لایه نقشه */}
                 <TileLayer
@@ -101,8 +92,31 @@ function ModalContent(props: { data: { active: boolean, info: any }, onClose: (d
                 <Polyline pathOptions={{ color: 'black' }} positions={pathList} />
                 <ChangeCursor />
             </MapContainer>
-            
-            <Box width={"100%"} pt={1} pb={1}>
+        )
+    }
+
+
+    useEffect(() => {
+
+        if (data.info?.path) {
+            setPathlist(JSON.parse(data.info.path))
+        }
+    }, [data])
+
+
+    return (
+        <Box sx={{ width: "calc(100vw - 100px)", height: "calc(100vh - 250px)" }} display={"flex"} flexDirection={"column"}>
+
+            <Box sx={{ width: "100%" }} mt={1} mb={1}>
+
+            </Box>
+
+            <Box width={"100%"} sx={{ display: "flex", flex: 1 }} mt={1} mb={1}>
+                {mapContent()}
+            </Box>
+
+
+            <Box width={"100%"} mt={1} mb={1}>
                 <Button variant="contained" onClick={() => { onSave() }} loading={loading} fullWidth>
                     ذخیره
                 </Button>

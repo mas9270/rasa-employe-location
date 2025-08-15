@@ -2,13 +2,14 @@
 import { reactToastify } from "@/utils/toastify";
 import { Box, Button, CircularProgress } from "@mui/material";
 import { useEffect, useState } from "react";
-import { MapContainer, TileLayer, useMapEvents, Marker, Popup, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import AddEditModal from "./components/addEdit";
 import DeleteModal from "./components/delete";
 import { DefaultIcon1, ColoredMarker } from "@/utils/leafletConfig";
 import PathLocation from "./components/pathLocation";
 import { getPathLength } from "geolib";
-
+import L from "leaflet";
+import "leaflet-polylinedecorator";
 
 export default function LocationsPage() {
     const [currentLocation, setCurrentLocation] = useState<any>(null)
@@ -274,6 +275,8 @@ export default function LocationsPage() {
                     }}
                 />
 
+                <PolylineWithArrows positions={currentLocationInfo} />
+
             </MapContainer>
 
             {loading && loadingFu()}
@@ -296,4 +299,34 @@ function ClickHandler({ rightClick, middleClick }: { rightClick: (location: any)
         },
     });
     return null;
+}
+
+function PolylineWithArrows({ positions }: { positions: any }) {
+    const map = useMap();
+
+
+
+    useEffect(() => {
+        positions = positions?.path ? JSON.parse(positions.path) : []
+        const decorator = L.polylineDecorator(L.polyline(positions), {
+            patterns: [
+                {
+                    offset: 0,
+                    repeat: 50, // فاصله بین فلش‌ها (پیکسل)
+                    symbol: L.Symbol.arrowHead({
+                        pixelSize: 10,
+                        polygon: false,
+                        pathOptions: { stroke: true, color: "red" },
+                    }),
+                },
+            ],
+        });
+        decorator.addTo(map);
+
+        return () => {
+            map.removeLayer(decorator);
+        };
+    }, [map, positions]);
+
+    return null
 }

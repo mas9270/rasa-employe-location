@@ -2,11 +2,13 @@
 import { useState, useEffect } from "react";
 import { Box, Button, CircularProgress, Typography } from "@mui/material";
 import { DefaultIcon1, ColoredMarker } from "@/utils/leafletConfig";
-import { MapContainer, TileLayer, useMapEvents, Marker, Popup, Polyline } from "react-leaflet";
+import { MapContainer, TileLayer, useMapEvents, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import { reactToastify } from "@/utils/toastify";
 import { DataGrid } from "@mui/x-data-grid";
 import CustomFieldSet from "@/components/ui/customFieldset";
 import { getPathLength } from "geolib";
+import L from "leaflet";
+import "leaflet-polylinedecorator";
 
 export default function UsersLocation() {
     const [locationId, setLocationId] = useState<any>(null)
@@ -81,8 +83,16 @@ function Locations(props: { locationId: any, setLocationId: any }) {
                         setCurrentLocationInfo(null)
                     }}
                 >حذف نمایش مسیر {currentLocationInfo?.name}</Button>
+                <Button
+                    disabled={locationId ? false : true || loading}
+                    size={"small"}
+                    variant="contained"
+                    onClick={() => {
+                        setLocationId(null)
+                    }}
+                >حذف فیلتر {locationId  ?.name}</Button>
             </Box>
-            <Box width={"100%"} height={"100%"} flexGrow={1}>
+            <Box width={"100%"} sx={{ display: "flex", flex: 1 }}>
                 <MapContainer
                     center={[36.3206, 59.6168]}
                     zoom={12} // زوم پیشنهادی برای دیدن کامل شهر
@@ -156,6 +166,8 @@ function Locations(props: { locationId: any, setLocationId: any }) {
                             pathOptions={{ color: 'black' }}
                             positions={currentLocationInfo.path ? JSON.parse(currentLocationInfo.path) : []} />
                     )}
+
+                    <PolylineWithArrows positions={currentLocationInfo} />
                 </MapContainer>
             </Box>
             {
@@ -215,16 +227,6 @@ function UserByLocation(props: { locationId: any, setLocationId: any }) {
 
     return (
         <Box sx={{ width: "100%", height: "100%", display: "flex", flexDirection: "column" }}>
-            <Box display={"flex"} justifyContent={"end"} gap={2} mb={2}>
-                <Button
-                    disabled={locationId ? false : true || loading}
-                    size={"small"}
-                    variant="contained"
-                    onClick={() => {
-                        setLocationId(null)
-                    }}
-                >حذف فیلتر</Button>
-            </Box>
             <Box width={"100%"} display={"flex"} flexGrow={1}>
                 <DataGrid
                     loading={loading}
@@ -319,4 +321,34 @@ function UserByLocation(props: { locationId: any, setLocationId: any }) {
             </Box>
         </Box>
     )
+}
+
+function PolylineWithArrows({ positions }: { positions: any }) {
+    const map = useMap();
+
+
+
+    useEffect(() => {
+        positions = positions?.path ? JSON.parse(positions.path) : []
+        const decorator = L.polylineDecorator(L.polyline(positions), {
+            patterns: [
+                {
+                    offset: 0,
+                    repeat: 50, // فاصله بین فلش‌ها (پیکسل)
+                    symbol: L.Symbol.arrowHead({
+                        pixelSize: 10,
+                        polygon: false,
+                        pathOptions: { stroke: true, color: "red" },
+                    }),
+                },
+            ],
+        });
+        decorator.addTo(map);
+
+        return () => {
+            map.removeLayer(decorator);
+        };
+    }, [map, positions]);
+
+    return null
 }

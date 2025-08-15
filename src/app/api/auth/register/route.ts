@@ -6,9 +6,9 @@ const prisma = new PrismaClient();
 export async function POST(req: Request) {
     const { username, password } = await req.json();
 
-    const existingUser = await prisma.admin.findMany({ where: { username, password } });
+    const existingUser = await prisma.admin.findUnique({ where: { username } });
     if (existingUser) {
-        return NextResponse.json({ error: "ایمیل تکراری است" }, { status: 400 });
+        return NextResponse.json({ error: "نام کاربری تکراری است" }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -17,5 +17,5 @@ export async function POST(req: Request) {
         data: { username, password: hashedPassword },
     });
 
-    return NextResponse.json({ message: "ثبت‌نام موفق", userId: user.id });
+    return NextResponse.json({ message: "ثبت‌ نام موفق", userId: user.id });
 }

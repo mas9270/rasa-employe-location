@@ -35,7 +35,7 @@ export default function Header() {
                             width: '100%',
                         }}>
                             <Box sx={{ paddingRight: "5px", paddingLeft: "5px" }}>
-                                <Typography variant='h6'>جوبولی طلا</Typography>
+                                <Typography variant='h6'>منطقه کارمندان</Typography>
                             </Box>
                         </Box>
                         <Box
