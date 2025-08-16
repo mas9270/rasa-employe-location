@@ -36,11 +36,6 @@ export default function LocationsPage() {
         },
     })
 
-    useEffect(() => {
-        console.log(structureInfo)
-    }, [structureInfo])
-
-
     return (
         <Box
             sx={{
@@ -56,7 +51,7 @@ export default function LocationsPage() {
                 sx={{
                     width: { xs: "100%", sm: "100%", md: "500px", lg: "500px", xl: "500px" },
                     display: "flex",
-                    flexDirection: { xs: "row", sm: "row", md: "column", lg: "column", xl: "column" },
+                    flexDirection: { xs: "column", sm: "column", md: "column", lg: "column", xl: "column" },
                     minHeight: 0,
                 }}
             >

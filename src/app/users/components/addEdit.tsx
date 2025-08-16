@@ -195,7 +195,7 @@ function Form(props: { info: any, done: () => void, setLoading: any, loading: bo
                         multiline
                         rows={4}
                     />
-                    <Box width={"100%"} display={"flex"}>
+                    <Box width={"100%"} display={"flex"} gap={1}>
                         <TextField
                             onClick={(e) => {
                                 setLocationModalInfo({ active: true, info: info })
@@ -216,7 +216,7 @@ function Form(props: { info: any, done: () => void, setLoading: any, loading: bo
                             disabled={true}
                             value={locationName}
                             sx={{ cursor: "pointer" }}
-                            // label="نام منطقه"
+                            label="نام جایگاه"
                             type='text'
                             fullWidth
                         // slotProps={{
@@ -280,7 +280,7 @@ function GetLocation(props: { locationModalInfo: any, onClose: (locationId?: any
                 <MapContainer
                     center={[36.3206, 59.6168]}
                     zoom={12} // زوم پیشنهادی برای دیدن کامل شهر
-                    style={{ width: "600px", height: "400px" }}
+                    style={{ width: "100%", height: "100%" }}
                 >
                     {/* لایه نقشه */}
                     <TileLayer

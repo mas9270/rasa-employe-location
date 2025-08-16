@@ -30,3 +30,10 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(newLocation);
 }
+
+export async function PUT(req: Request) {
+    const locations = await prisma.locations.findMany();
+    const paths = await prisma.paths.findMany();
+    const newLocations: any = locations.map((item) => ({ ...item, pathName: paths.find((item1) => item1.id === item.pathId)?.name }))
+    return NextResponse.json(newLocations);
+}

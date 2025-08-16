@@ -13,8 +13,20 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
-    await prisma.paths.delete({
-        where: { id: Number(params.id) }
+
+    const isLocation = await prisma.locations.findMany({
+        where: {
+            pathId: Number(params.id),
+        },
     });
-    return NextResponse.json({ message: "Deleted" });
+
+    if (isLocation && isLocation.length !== 0) {
+        return NextResponse.json({ message: "تعدادی از جایگاه ها به این مسیر وابسته اند", done: false });
+    }
+    else {
+        await prisma.paths.delete({
+            where: { id: Number(params.id) }
+        });
+        return NextResponse.json({ message: "عملیات حذف با موفقیت انجام شد", done: true });
+    }
 }

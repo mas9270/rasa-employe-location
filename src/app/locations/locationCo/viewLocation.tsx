@@ -20,8 +20,8 @@ export default function ViewLocation(props: { structureInfo: StructureInfo, setS
     const columns = [
         { field: "id", headerName: "شناسه", width: 50 },
         { field: "name", headerName: "نام", width: 100 },
-        { field: "description", headerName: "توضیحات", width: 100 },
-        { field: "pathId", headerName: "شناسه مسیر", width: 100 },
+        { field: "pathName", headerName: "نام مسیر", width: 120 },
+        { field: "description", headerName: "توضیحات", width: 120 },
         {
             field: "actionBtn",
             headerName: "عملیات",
@@ -75,7 +75,7 @@ export default function ViewLocation(props: { structureInfo: StructureInfo, setS
 
     async function getData() {
         setLoading(true)
-        fetch("/api/locations")
+        fetch("/api/locations", { method: "PUT" })
             .then((res) => res.json())
             .then((res) => {
                 setRows(res)

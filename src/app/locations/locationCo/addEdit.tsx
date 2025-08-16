@@ -202,8 +202,7 @@ export default function AddEdit(props: AddEdit) {
     useEffect(() => {
         if ((data.structureInfo.locations.mode === "add" ||
             data.structureInfo.locations.mode === "edit") &&
-            data.structureInfo.locations.latLng &&
-            data.structureInfo.locations.latLng.length !== 0
+            data.structureInfo.locations.latLng?.length !== 0
         ) {
             setValue("lat", `${data.structureInfo.locations.latLng[0]}`)
             setValue("lng", `${data.structureInfo.locations.latLng[1]}`)
@@ -219,7 +218,10 @@ export default function AddEdit(props: AddEdit) {
                 }
             })
             setLoading(true)
-            fetch(`/api/locations/${selectedPathId}`)
+            fetch(`/api/locations/${selectedPathId}`, {
+                method: "POST",
+                body: JSON.stringify({ id: selectedPathId })
+            })
                 .then((res) => res.json())
                 .then((res) => {
                     data.setStructureInfo((prevState) => {
@@ -251,7 +253,7 @@ export default function AddEdit(props: AddEdit) {
     }, [selectedPathId])
 
     useEffect(() => {
-        if (data.info) {
+        if (data.info && data.info?.lat && data.info?.lng) {
             data.setStructureInfo((prevState) => {
                 return {
                     ...prevState,

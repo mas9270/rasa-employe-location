@@ -21,7 +21,7 @@ export default function UsersPage() {
         { field: "id", headerName: "شناسه", width: 150 },
         { field: "name", headerName: "نام", width: 200 },
         { field: "nationalCode", headerName: "کدملی", width: 300 },
-        { field: "locationId", headerName: "شناسه جایگاه", width: 300 },
+        { field: "locationName", headerName: "نام جایگاه", width: 300 },
         {
             field: "actionBtn",
             headerName: "عملیات",
@@ -62,7 +62,7 @@ export default function UsersPage() {
 
     async function getData() {
         setLoading(true)
-        const res = await fetch("/api/users");
+        const res = await fetch("/api/users",{method :"PUT"});
         setRows(await res.json());
         setLoading(false)
         // setTimeout(() => {

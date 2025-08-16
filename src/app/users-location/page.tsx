@@ -9,16 +9,23 @@ import CustomFieldSet from "@/components/ui/customFieldset";
 import { getPathLength } from "geolib";
 import L from "leaflet";
 import "leaflet-polylinedecorator";
-
+import SearchLocation from "@/components/ui/searchLocation";
 
 export default function UsersLocation() {
     const [locationInfo, setLocationInfo] = useState<any>(null)
 
     return (
-        <Box sx={{ width: "100%", flex: 1 }} display={"flex"} gap={1} >
+        <Box sx={{ width: "100%", flex: 1, flexDirection: { xs: "column", sm: "column", md: "row", lg: "row", xl: "row" } }} display={"flex"} gap={1} >
 
-            <Box sx={{ width: "50%", flex: 1 }} display={"flex"}>
-                <CustomFieldSet title="مسیرها وجایگاه ها" width="100%" height="100%">
+            <Box
+                sx={{
+                    width: { xs: "100%", sm: "100%", md: "50%", lg: "50%", xl: "50%" },
+                    height: { xs: "500px", sm: "500px", md: "auto", lg: "auto", xl: "auto" },
+                    flex: { xs: "auto", sm: "auto", md: 1, lg: 1, xl: 1 }
+                }}
+                display={"flex"}
+            >
+                <CustomFieldSet title="مسیرها و جایگاه ها" width="100%" height="100%">
                     <Locations
                         locationInfo={locationInfo}
                         setLocationInfo={setLocationInfo}
@@ -26,8 +33,15 @@ export default function UsersLocation() {
                 </CustomFieldSet>
             </Box>
 
-            <Box sx={{ width: "50%", flex: 1 }} display={"flex"}>
-                <CustomFieldSet title={`${locationInfo?.name ? `کاربران : ${locationInfo?.name}` : "همه کاربران"}`} width="100%" height="100%">
+            <Box
+                sx={{
+                    width: { xs: "100%", sm: "100%", md: "50%", lg: "50%", xl: "50%" },
+                    height: { xs: "500px", sm: "500px", md: "auto", lg: "auto", xl: "auto" },
+                    flex: { xs: "auto", sm: "auto", md: 1, lg: 1, xl: 1 }
+                }}
+                display={"flex"}
+            >
+                <CustomFieldSet title={`${locationInfo?.name ? `کارمندان : ${locationInfo?.name}` : "همه کارمندان"}`} width="100%" height="100%">
                     <UserByLocation locationInfo={locationInfo} setLocationInfo={setLocationInfo} />
                 </CustomFieldSet>
             </Box>
@@ -43,7 +57,7 @@ function Locations(props: { locationInfo: any, setLocationInfo: any }) {
     const [allPath, setAppPath] = useState<any>(null)
     const [loading, setLoading] = useState<boolean>(false)
     const [selectedPath, setSelectedPath] = useState<{ pathInfo: any, locations: any[] }>({ pathInfo: null, locations: [] })
-
+    const [seachLocation, setSearchLocation] = useState<{ latLng: any, text: string }>({ latLng: [], text: "" })
 
     async function getLocationList() {
         setLoading(true)
@@ -64,29 +78,37 @@ function Locations(props: { locationInfo: any, setLocationInfo: any }) {
 
     return (
         <Box sx={{ width: "100%", height: "100%", position: "relative" }} display={"flex"} flexDirection={"column"}>
-            <Box display={"flex"} justifyContent={"end"} gap={2} mb={2}>
-                <Button
-                    disabled={loading}
-                    loading={loading}
-                    size={"small"}
-                    variant="contained"
-                    onClick={() => {
-                        getLocationList()
-                    }}
-                >
-                    دریافت اطلاعات
-                </Button>
-                <Button
-                    disabled={loading || (!locationInfo)}
-                    loading={loading}
-                    size={"small"}
-                    variant="contained"
-                    onClick={() => {
-                        setLocationInfo(null)
-                    }}
-                >
-                    {locationInfo ? `حذف فیلر ${locationInfo.name}` : "حذف فیلتر کاربران"}
-                </Button>
+            <Box display={"flex"} justifyContent={"between"} gap={2} mb={2}>
+                <Box sx={{ display: "flex", alignItems: 'start', justifyContent: "start", width: "100%" }}>
+                    <SearchLocation
+                        onSearch={(searchLatLng, text) => {
+                            setSearchLocation({ latLng: searchLatLng ? searchLatLng : [], text: text ? text : "" })
+                        }} />
+                </Box>
+                <Box sx={{ display: "flex", alignItems: "center", justifyContent: "end", width: "100%" }} gap={1}>
+                    <Button
+                        disabled={loading}
+                        loading={loading}
+                        size={"small"}
+                        variant="contained"
+                        onClick={() => {
+                            getLocationList()
+                        }}
+                    >
+                        دریافت اطلاعات
+                    </Button>
+                    <Button
+                        disabled={loading || (!locationInfo)}
+                        loading={loading}
+                        size={"small"}
+                        variant="contained"
+                        onClick={() => {
+                            setLocationInfo(null)
+                        }}
+                    >
+                        {locationInfo ? `حذف فیلر ${locationInfo.name}` : "حذف فیلتر کارمندان"}
+                    </Button>
+                </Box>
             </Box>
             <Box width={"100%"} sx={{ display: "flex", flex: 1 }}>
                 <MapContainer
@@ -111,10 +133,47 @@ function Locations(props: { locationInfo: any, setLocationInfo: any }) {
                             setLocationInfo={setLocationInfo}
                         />))}
 
+                    {/* برای جستجو  */}
+                    {seachLocation.latLng?.length !== 0 && (
+                        <Marker position={seachLocation.latLng} icon={ColoredMarker("red")} >
+                            <Popup>
+                                <Box
+                                    width={"100%"}
+                                    display={"flex"}
+                                    flexDirection={"column"}
+                                    justifyContent={"center"}
+                                    alignItems={"center"}
+                                    sx={{ direction: "rtl", fontFamily: "IRANSansX" }}
+                                >
+                                    <Box>{seachLocation.text}</Box>
+                                    <Box >
+                                        عرض جعرافیایی : {seachLocation.latLng[0]}
+                                    </Box>
+                                    <Box >
+                                        طول جفرافیایی: {seachLocation.latLng[1]}
+                                    </Box>
+                                </Box>
+                            </Popup>
+                        </Marker>
+                    )}
+                    <FlyToPosition position={seachLocation.latLng} />
+
                 </MapContainer>
             </Box>
         </Box >
     )
+}
+
+function FlyToPosition({ position }: { position: [number, number] }) {
+    const map = useMap();
+
+    useEffect(() => {
+        if (position && position[0] && position[1]) {
+            map.flyTo(position, 13, { duration: 2 }); // duration به ثانیه
+        }
+    }, [position, map]);
+
+    return null;
 }
 
 function ViewPath(props: { item: any, selectedPath: any, setSelectedPath: any, allLocations: any, locationInfo: any, setLocationInfo: any }) {
@@ -240,15 +299,15 @@ function UserByLocation(props: { locationInfo: any, setLocationInfo: any }) {
     const [rows, setRows] = useState<any>([]);
     const [loading, setLoading] = useState<boolean>(true)
     const columns = [
-        { field: "id", headerName: "شناسه", width: 150 },
+        { field: "id", headerName: "شناسه", width: 70 },
         { field: "name", headerName: "نام", width: 200 },
         { field: "nationalCode", headerName: "کدملی", width: 200 },
-        { field: "locationId", headerName: "شناسه منطقه", width: 100 },
+        { field: "locationName", headerName: "نام جایگاه", width: 200 },
     ];
 
     async function getData() {
         setLoading(true)
-        const res = await fetch("/api/users");
+        const res = await fetch("/api/users", { method: "PUT" });
         const res1 = await res.json()
         if (locationInfo) {
             setRows(() => {

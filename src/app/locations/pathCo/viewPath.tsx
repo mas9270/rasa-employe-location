@@ -18,8 +18,8 @@ export default function ViewPath(props: { structureInfo: StructureInfo, setStruc
     const [isDelete, setIsDelete] = useState<{ active: boolean, info: any }>({ active: false, info: null })
     const columns = [
         { field: "id", headerName: "شناسه", width: 50 },
-        { field: "name", headerName: "نام", width: 100 },
-        { field: "description", headerName: "توضیحات", width: 100 },
+        { field: "name", headerName: "نام", width: 150 },
+        { field: "description", headerName: "توضیحات", width: 150 },
         {
             field: "actionBtn",
             headerName: "عملیات",
@@ -223,10 +223,7 @@ export default function ViewPath(props: { structureInfo: StructureInfo, setStruc
                             }
                         }
                     })
-                    // console.log(e)
                 }}
-
-
             />
         )
     }

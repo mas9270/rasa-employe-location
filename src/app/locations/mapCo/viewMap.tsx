@@ -1,16 +1,17 @@
 "use client"
 import React, { useEffect, useState } from 'react'
-import { Box } from "@mui/material";
+import { Box, TextField } from "@mui/material";
 import { MapContainer, TileLayer, useMapEvents, Marker, Popup, Polyline, useMap } from "react-leaflet";
 import { StructureInfo, StructureInfoSet } from '../locationTypes';
 import { ColoredMarker } from '@/utils/leafletConfig';
 import L from "leaflet";
 import "leaflet-polylinedecorator";
 import CustomFieldSet from '@/components/ui/customFieldset';
+import SearchLocation from '@/components/ui/searchLocation';
 
 export default function ViewMap(props: { structureInfo: StructureInfo, setStructureInfo: StructureInfoSet }) {
     const { structureInfo, setStructureInfo } = props
-
+    const [seachLocation, setSearchLocation] = useState<any>([])
 
     function mapClick(location: any) {
         if (structureInfo.locations.mode === "add" || structureInfo.locations.mode === "edit") {
@@ -19,7 +20,7 @@ export default function ViewMap(props: { structureInfo: StructureInfo, setStruct
                     ...prevState,
                     locations: {
                         ...prevState.locations,
-                        latLng: [location.lat, location.lng]
+                        latLng: [location?.lat, location?.lng]
                     }
                 }
             })
@@ -31,7 +32,7 @@ export default function ViewMap(props: { structureInfo: StructureInfo, setStruct
                     ...prevState,
                     paths: {
                         ...prevState.paths,
-                        pathList: [...prevState.paths.pathList, [location.lat, location.lng]]
+                        pathList: [...prevState.paths.pathList, [location?.lat, location?.lng]]
                     }
                 }
             })
@@ -54,9 +55,13 @@ export default function ViewMap(props: { structureInfo: StructureInfo, setStruct
     }
 
     function newLocation() {
-        const position: any = structureInfo.locations.latLng
+
+        const currentLocation: any = structureInfo.locations.latLng ? structureInfo.locations.latLng : []
+        if (currentLocation.length !== 2) {
+            return null
+        }
         return (
-            <Marker position={position} icon={ColoredMarker("blue")} >
+            <Marker position={currentLocation} icon={ColoredMarker("green")} >
                 <Popup>
                     <Box
                         width={"100%"}
@@ -67,16 +72,39 @@ export default function ViewMap(props: { structureInfo: StructureInfo, setStruct
                         sx={{ direction: "rtl", fontFamily: "IRANSansX" }}
                     >
                         <Box >
-                            عرض جعرافیایی : {position[0]}
+                            عرض جعرافیایی : {currentLocation[0]}
                         </Box>
                         <Box >
-                            طول جفرافیایی: {position[1]}
+                            طول جفرافیایی: {currentLocation[1]}
                         </Box>
+                    </Box>
+                </Popup>
+            </Marker>
+        )
+    }
 
-                        {/* <Button sx={{ marginTop: "15px" }} variant="contained" onClick={() => { addAction() }} color="success" fullWidth>
-                            افزودن
-                        </Button> */}
+    function newLocation1() {
+        if (seachLocation.length !== 2) {
+            return null
+        }
 
+        return (
+            <Marker position={seachLocation} icon={ColoredMarker("red")} >
+                <Popup>
+                    <Box
+                        width={"100%"}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        justifyContent={"center"}
+                        alignItems={"center"}
+                        sx={{ direction: "rtl", fontFamily: "IRANSansX" }}
+                    >
+                        <Box >
+                            عرض جعرافیایی : {seachLocation[0]}
+                        </Box>
+                        <Box >
+                            طول جفرافیایی: {seachLocation[1]}
+                        </Box>
                     </Box>
                 </Popup>
             </Marker>
@@ -86,20 +114,10 @@ export default function ViewMap(props: { structureInfo: StructureInfo, setStruct
     return (
         <Box sx={{ width: "100%", flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }} >
             <Box width={"100%"} display={"flex"} gap={1} mb={1}>
-                <Box sx={{ width: "50%" }}>
-                    <CustomFieldSet width='100%' title='اطلاعات مسیر'>
-                        <Box width={"100%"} display={"flex"} flexDirection={"column"}>
-                            {/* <Box>مسیر انتخاب شده : {structureInfo.paths.clickPathInfo?.id} - {structureInfo.paths.clickPathInfo?.name}</Box> */}
-                        </Box>
-                    </CustomFieldSet>
-                </Box>
-                <Box sx={{ width: "50%" }}>
-                    <CustomFieldSet width='100%' title='اطلاعات جایگاه'>
-                        <Box width={"100%"} display={"flex"} flexDirection={"column"}>
-                            {/* <Box>مسیر انتخاب شده : {structureInfo.lo} - {structureInfo.paths.clickPathInfo?.name}</Box> */}
-                        </Box>
-                    </CustomFieldSet>
-                </Box>
+                <SearchLocation
+                    onSearch={(searchLatLng) => {
+                        setSearchLocation(searchLatLng ? searchLatLng : [])
+                    }} />
             </Box>
             <Box sx={{ width: "100%", display: "flex", flex: 1, minHeight: 0 }}>
                 <MapContainer center={[36.3206, 59.5800]} zoom={12} style={{ width: "100%", height: "100%", minHeight: "400px" }} >
@@ -108,6 +126,10 @@ export default function ViewMap(props: { structureInfo: StructureInfo, setStruct
                         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                     />
 
+
+                    {/* برای جستجو  */}
+                    {seachLocation.length !== 0 && newLocation1()}
+                    <FlyToPosition position={seachLocation} />
 
                     {/* برای جایگاه  */}
                     {structureInfo.locations.latLng?.length !== 0 && newLocation()}
@@ -204,4 +226,16 @@ function PolylineWithArrows({ positions }: { positions: any }) {
     }, [map, positions]);
 
     return null
+}
+
+function FlyToPosition({ position }: { position: [number, number] }) {
+    const map = useMap();
+
+    useEffect(() => {
+        if (position && position[0] && position[1]) {
+            map.flyTo(position, 13, { duration: 2 }); // duration به ثانیه
+        }
+    }, [position, map]);
+
+    return null;
 }

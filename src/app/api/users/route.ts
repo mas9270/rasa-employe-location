@@ -20,3 +20,11 @@ export async function POST(req: Request) {
     });
     return NextResponse.json(newUsers);
 }
+
+export async function PUT(req: Request) {
+    const users = await prisma.users.findMany();
+    const locations = await prisma.locations.findMany();
+    const newUsers: any = users.map((item) => ({ ...item, locationName: locations.find((item1) => item1.id === item.locationId)?.name }))
+    return NextResponse.json(newUsers);
+}
+

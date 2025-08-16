@@ -13,8 +13,11 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 }
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+
     await prisma.users.delete({
         where: { id: Number(params.id) }
     });
-    return NextResponse.json({ message: "Deleted" });
+
+    return NextResponse.json({ message: "عملیات حذف با موفقیت انجام شد", done: true });
+
 }
