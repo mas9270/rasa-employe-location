@@ -67,6 +67,7 @@ export default function DeleteModal(props: { data: { active: boolean, info: any 
                     <Divider />
                     <Box p={"10px"} display={"flex"} justifyContent={"end"} gap={2}>
                         <Button
+                            loading={loading}
                             sx={{ width: "100%" }}
                             variant="contained"
                             onClick={() => {
@@ -75,6 +76,7 @@ export default function DeleteModal(props: { data: { active: boolean, info: any 
                             color='success'
                         >ذخیره</Button>
                         <Button
+                            loading={loading}
                             sx={{ width: "100%" }}
                             variant="contained"
                             onClick={handleClose}
@@ -82,22 +84,6 @@ export default function DeleteModal(props: { data: { active: boolean, info: any 
                         >انصراف</Button>
                     </Box>
                 </Box>
-
-                {loading &&
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            position: "absolute",
-                            top: 0,
-                            right: 0,
-                            bottom: 0,
-                            left: 0
-                        }}>
-                        <CircularProgress />
-                    </Box>
-                }
             </Box>
         </Modal >
     );
