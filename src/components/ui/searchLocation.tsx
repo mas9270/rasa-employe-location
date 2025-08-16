@@ -59,7 +59,15 @@ export default function SearchLocation(props: { onSearch: (latLng?: any[] | null
     }, [debouncedValue]);
 
     return (
-        <Box sx={{ width: "auto", display: "flex", alignItems: "center" }} gap={2}>
+        <Box
+            sx={{
+                width: "auto",
+                display: "flex",
+                alignItems: "center",
+                flexDirection: { xs: "column", sm: "column", md: "row", lg: "row", xl: "row", }
+            }}
+            gap={2}
+        >
             <TextField
                 variant='outlined'
                 sx={{ width: "300px" }}
