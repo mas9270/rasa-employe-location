@@ -119,7 +119,7 @@ function SwipeableTemporaryDrawerContent() {
                   {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
                   </ListItemIcon> */}
                         <ListItemText >
-                          <Box sx={{ color: item.path === currentPath ? "red" : "" }}>{item.text}</Box>
+                          <Box sx={{ color: item.path === currentPath ? "purple" : "" }}>{item.text}</Box>
                         </ListItemText>
                       </ListItemButton>
                     </ListItem>
@@ -142,7 +142,7 @@ function SwipeableTemporaryDrawerContent() {
             <Link key={index} href={item.path} style={{ textDecoration: "none", color: "inherit" }}>
               <Box
                 px={2}
-                sx={{ cursor: "pointer", color: item.path === currentPath ? "red" : "" }}
+                sx={{ cursor: "pointer", color: item.path === currentPath ? "purple" : "" }}
               >
                 {item.text}
               </Box>

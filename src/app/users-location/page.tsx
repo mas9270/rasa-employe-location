@@ -78,7 +78,13 @@ function Locations(props: { locationInfo: any, setLocationInfo: any }) {
 
     return (
         <Box sx={{ width: "100%", height: "100%", position: "relative" }} display={"flex"} flexDirection={"column"}>
-            <Box display={"flex"} justifyContent={"between"} gap={2} mb={2}>
+            <Box
+                display={"flex"}
+                justifyContent={"between"}
+                gap={2}
+                mb={2}
+                flexDirection={{ xs: "column", SM: "column", md: "column", lg: "row", xl: "row" }}
+            >
                 <Box sx={{ display: "flex", alignItems: 'start', justifyContent: "start", width: "100%" }}>
                     <SearchLocation
                         onSearch={(searchLatLng, text) => {
@@ -91,6 +97,7 @@ function Locations(props: { locationInfo: any, setLocationInfo: any }) {
                         loading={loading}
                         size={"small"}
                         variant="contained"
+                        color="success"
                         onClick={() => {
                             getLocationList()
                         }}
