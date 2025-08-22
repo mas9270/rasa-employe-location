@@ -19,7 +19,7 @@ export default function Main(props: { children: React.ReactNode }) {
                 display: 'flex',
                 flexDirection: "column"
             }}>
-            <AnimatePresence mode="wait">
+            {/* <AnimatePresence mode="wait">
                 <motion.div
                     key={pathname} // هر مسیر جدید یک key جدید می‌دهد
                     initial={{ opacity: 0, y: 20 }}
@@ -32,10 +32,10 @@ export default function Main(props: { children: React.ReactNode }) {
                         flexDirection: 'column', // اگر children نیاز به column داشته باشد
                         minHeight: 0,   // جلوگیری از overflow در flex
                     }}
-                >
-                    {children}
-                </motion.div>
-            </AnimatePresence>
+                > */}
+            {children}
+            {/* </motion.div>
+            </AnimatePresence> */}
         </Box>
     )
 }
