@@ -14,14 +14,14 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
 export async function DELETE(req: Request, { params }: { params: { id: string } }) {
 
-    const isLocation = await prisma.locations.findMany({
+    const isLocation = await prisma.users.findMany({
         where: {
             pathId: Number(params.id),
         },
     });
 
     if (isLocation && isLocation.length !== 0) {
-        return NextResponse.json({ message: "تعدادی از جایگاه ها به این مسیر وابسته اند", done: false });
+        return NextResponse.json({ message: "تعدادی از کاربران به این مسیر وابسته اند", done: false });
     }
     else {
         await prisma.paths.delete({

@@ -98,7 +98,7 @@ export default function SearchLocation(props: { onSearch: (latLng?: any[] | null
                     },
                 }}
             />
-            <Box >{debouncedValue}</Box>
+            {/* <Box >{debouncedValue}</Box> */}
         </Box>
     )
 }

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import { useEffect, useState } from "react";
 import { reactToastify } from "@/utils/toastify";
 import { Box, Button, CircularProgress } from "@mui/material";
@@ -16,84 +16,119 @@ import { StructureInfo } from "./locationTypes";
 // import L from "leaflet";
 // import "leaflet-polylinedecorator";
 
-
-
-
-
-
 export default function LocationsPage() {
-    const [structureInfo, setStructureInfo] = useState<StructureInfo>({
-        loading: false,
-        paths: {
-            mode: "view",
-            pathList: [],
-            clickPathInfo: null
-        },
-        locations: {
-            mode: "view",
-            pathList: [],
-            latLng: []
-        },
-    })
+  const [structureInfo, setStructureInfo] = useState<StructureInfo>({
+    loading: false,
+    paths: {
+      mode: "view",
+      pathList: [],
+      clickPathInfo: null,
+    },
+    locations: {
+      mode: "view",
+      pathList: [],
+      latLng: [],
+    },
+  });
 
-    return (
+  return (
+    <Box
+      sx={{
+        width: "100%",
+        position: "relative",
+        display: "flex",
+        flexDirection: {
+          xs: "column",
+          sm: "column",
+          md: "row",
+          lg: "row",
+          xl: "row",
+        },
+        flex: 1,
+        minHeight: 0,
+      }}
+    >
+      <Box
+        sx={{
+          width: {
+            xs: "100%",
+            sm: "100%",
+            md: "500px",
+            lg: "500px",
+            xl: "500px",
+          },
+          display: "flex",
+          flexDirection: {
+            xs: "column",
+            sm: "column",
+            md: "column",
+            lg: "column",
+            xl: "column",
+          },
+          minHeight: 0,
+        }}
+      >
         <Box
-            sx={{
-                width: "100%",
-                position: "relative",
-                display: "flex",
-                flexDirection: { xs: "column", sm: "column", md: "row", lg: "row", xl: "row" },
-                flex: 1,
-                minHeight: 0
-            }}
+          sx={{
+            width: "100%",
+            height: {
+              xs: "500px",
+              sm: "500px",
+              md: "100%",
+              lg: "100%",
+              xl: "100%",
+            },
+          }}
+          p={1}
         >
-            <Box
-                sx={{
-                    width: { xs: "100%", sm: "100%", md: "500px", lg: "500px", xl: "500px" },
-                    display: "flex",
-                    flexDirection: { xs: "column", sm: "column", md: "column", lg: "column", xl: "column" },
-                    minHeight: 0,
-                }}
-            >
-                <Box sx={{ width: "100%", height: { xs: "500px", sm: "500px", md: "50%", lg: "50%", xl: "50%" } }} p={1}>
-                    <CustomFieldSet title="مسیر ها" width="100%" height="100%">
-                        <ViewPath
-                            structureInfo={structureInfo}
-                            setStructureInfo={setStructureInfo}
-                        />
-                    </CustomFieldSet>
-                </Box>
-                <Box sx={{ width: "100%", height: { xs: "500px", sm: "500px", md: "50%", lg: "50%", xl: "50%" } }} p={1}>
-                    <CustomFieldSet title="جایگاه ها" width="100%" height="100%">
-                        <ViewLocation
-                            structureInfo={structureInfo}
-                            setStructureInfo={setStructureInfo}
-                        />
-                    </CustomFieldSet>
-                </Box>
-            </Box>
-
-            <Box
-                sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    minHeight: 0,
-                    flex: 1
-                }}
-                p={1}
-            >
-                <CustomFieldSet title="نقشه" width="100%" flex={1}>
-                    <ViewMap
-                        structureInfo={structureInfo}
-                        setStructureInfo={setStructureInfo}
-                    />
-                </CustomFieldSet>
-            </Box>
+          <CustomFieldSet title="مسیر ها" width="100%" height="100%">
+            <ViewPath
+              structureInfo={structureInfo}
+              setStructureInfo={setStructureInfo}
+            />
+          </CustomFieldSet>
         </Box>
-    )
+        {/* <Box
+          sx={{
+            width: "100%",
+            height: {
+              xs: "500px",
+              sm: "500px",
+              md: "100%",
+              lg: "100%",
+              xl: "100%",
+            },
+          }}
+          p={1}
+        >
+          <CustomFieldSet title="جایگاه ها" width="100%" height="100%">
+            <ViewLocation
+              structureInfo={structureInfo}
+              setStructureInfo={setStructureInfo}
+            />
+          </CustomFieldSet>
+        </Box> */}
+      </Box>
+
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: "column",
+          minHeight: 0,
+          flex: 1,
+        }}
+        p={1}
+      >
+        <CustomFieldSet title="نقشه" width="100%" flex={1}>
+          <ViewMap
+            structureInfo={structureInfo}
+            setStructureInfo={setStructureInfo}
+          />
+        </CustomFieldSet>
+      </Box>
+    </Box>
+  );
 }
-
-
 
 // export default function LocationsPage() {
 //     const [currentLocation, setCurrentLocation] = useState<any>(null)
@@ -103,7 +138,6 @@ export default function LocationsPage() {
 //     const [pathLocation, setPathLocation] = useState<{ active: boolean, info: any, }>({ active: false, info: null })
 //     const [loading, setLoading] = useState<boolean>(false)
 //     const [currentLocationInfo, setCurrentLocationInfo] = useState<any>(null)
-
 
 //     function addAction() {
 //         setAddEditLocation({
@@ -404,8 +438,6 @@ export default function LocationsPage() {
 
 // function PolylineWithArrows({ positions }: { positions: any }) {
 //     const map = useMap();
-
-
 
 //     useEffect(() => {
 //         positions = positions?.path ? JSON.parse(positions.path) : []

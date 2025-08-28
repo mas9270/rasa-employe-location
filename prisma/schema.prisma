@@ -18,18 +18,10 @@ model Users {
   name         String
   nationalCode String
   description  String
-  locationId   Int
+  lat          Float
+  lng          Float
+  pathId       Int
   createdAt    DateTime @default(now())
-}
-
-model Locations {
-  id          Int      @id @default(autoincrement())
-  name        String
-  description String
-  lat         Float
-  lng         Float
-  pathId      Int
-  createdAt   DateTime @default(now())
 }
 
 model Paths {

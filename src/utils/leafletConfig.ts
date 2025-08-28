@@ -2,6 +2,7 @@ import L from "leaflet";
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
+import { getPathLength } from "geolib";
 
 export const DefaultIcon1 = L.icon({
   iconRetinaUrl: markerIcon2x?.src ?? markerIcon2x,
@@ -11,15 +12,14 @@ export const DefaultIcon1 = L.icon({
   iconAnchor: [12, 41],
   popupAnchor: [1, -34],
   shadowSize: [41, 41],
-
 });
 
-export const ColoredMarker = (color: "red" | "green" | "blue") => {
+export const ColoredMarker = (
+  color: "red" | "green" | "blue" | "black" | "purple"
+) => {
   // رنگ دلخواه را انتخاب می‌کنیم
   const fillColor =
-    color === "red" ? "#FF4136" :
-      color === "green" ? "#2ECC40" :
-        "#0074D9"; // blue پیش‌فرض
+    color === "red" ? "#FF4136" : color === "green" ? "#2ECC40" : "#0074D9"; // blue پیش‌فرض
 
   return L.divIcon({
     html: `
@@ -40,8 +40,15 @@ export const ColoredMarker = (color: "red" | "green" | "blue") => {
       </svg>
     `,
     className: "",
-    iconSize: [25, 41],      // اندازه آیکون مشابه Leaflet
-    iconAnchor: [12, 41],    // نوک پایین آیکون روی مختصات
-    popupAnchor: [1, -34],   // popup درست در بالا
+    iconSize: [25, 41], // اندازه آیکون مشابه Leaflet
+    iconAnchor: [12, 41], // نوک پایین آیکون روی مختصات
+    popupAnchor: [1, -34], // popup درست در بالا
   });
 };
+
+export function buildPathKilometr(path: any) {
+  const convertPath = path.map((item: any) => ({ lat: item[0], lng: item[1] }));
+  const distanceInMeters = getPathLength(convertPath);
+  const distanceInKm = (distanceInMeters / 1000).toFixed(2);
+  return `${distanceInKm} کیلومتر`;
+}

@@ -1,19 +1,8 @@
 // src/middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
+import { verifyAccessToken } from "./lib/jwt";
 
-const ACCESS_TOKEN_SECRET = new TextEncoder().encode(process.env.ACCESS_TOKEN_SECRET!);
-
-async function verifyAccessToken(token: string) {
-  try {
-    const { payload } = await jwtVerify(token, ACCESS_TOKEN_SECRET);
-    return payload;
-  } catch (err) {
-    console.log("JWT verification error:", err);
-    return null; // توکن نامعتبر یا منقضی شده
-  }
-}
 
 export async function middleware(req: NextRequest) {
   const token = req.cookies.get("rasatoken")?.value;
