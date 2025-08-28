@@ -63,7 +63,7 @@ function SwipeableTemporaryDrawerContent() {
   const currentList = [
     { path: "/users-location", text: "مسیرها و جایگاه کارمندان" },
     { path: "/users", text: "کارمندان" },
-    { path: "/locations", text: "مسیر ها و جایگاه ها" },
+    { path: "/locations", text: "مسیر ها" },
   ]
 
   const isXs = useMediaQuery(theme.breakpoints.only('xs'));

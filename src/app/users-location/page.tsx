@@ -1,6 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Box, Button, CircularProgress, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Typography,
+  Autocomplete,
+  TextField,
+} from "@mui/material";
 import { ColoredMarker } from "@/utils/leafletConfig";
 import {
   MapContainer,
@@ -101,14 +108,11 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
   const [searchUser, setSearchUser] = useState<any>(null);
   const [allPath, setAppPath] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(false);
-  const [selectedPath, setSelectedPath] = useState<{
-    pathInfo: any;
-    locations: any[];
-  }>({ pathInfo: null, locations: [] });
   const [seachLocation, setSearchLocation] = useState<{
     latLng: any;
     text: string;
   }>({ latLng: [], text: "" });
+  const [pathInfo, setPathInfo] = useState<any>(null);
 
   async function getLocationList() {
     setLoading(true);
@@ -119,24 +123,8 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
     setLoading(false);
   }
 
-  useEffect(() => {
-    getLocationList();
-  }, []);
-
-  useEffect(() => {
-    setLocationInfo(null);
-  }, [selectedPath.pathInfo]);
-
-  useEffect(() => {
-    console.log(searchUser);
-  }, [searchUser]);
-
-  return (
-    <Box
-      sx={{ width: "100%", height: "100%", position: "relative" }}
-      display={"flex"}
-      flexDirection={"column"}
-    >
+  function actions() {
+    return (
       <Box
         display={"flex"}
         justifyContent={"between"}
@@ -156,6 +144,7 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
             alignItems: "start",
             justifyContent: "start",
             width: "100%",
+            flexWrap: "wrap",
           }}
           gap={2}
         >
@@ -172,16 +161,19 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
               setSearchUser(userInfo);
             }}
           />
-        </Box>
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "end",
-            width: "100%",
-          }}
-          gap={1}
-        >
+          <Autocomplete
+            sx={{ width: "300px" }}
+            id="free-solo-demo"
+            freeSolo
+            size="small"
+            value={pathInfo?.name}
+            onChange={(_event, newValue, a, b) => {
+              setPathInfo(newValue);
+            }}
+            options={allPath}
+            getOptionLabel={(option: any) => option?.name} // 👈 فقط name رو نشون میده
+            renderInput={(params) => <TextField {...params} label="نام مسیر" />}
+          />
           <Button
             disabled={loading}
             loading={loading}
@@ -194,21 +186,13 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
           >
             دریافت اطلاعات
           </Button>
-          {/* <Button
-            disabled={loading || !locationInfo}
-            loading={loading}
-            size={"small"}
-            variant="contained"
-            onClick={() => {
-              setLocationInfo(null);
-            }}
-          >
-            {locationInfo
-              ? `حذف فیلر ${locationInfo.name}`
-              : "حذف فیلتر کارمندان"}
-          </Button> */}
         </Box>
       </Box>
+    );
+  }
+
+  function mapContent() {
+    return (
       <Box width={"100%"} sx={{ display: "flex", flex: 1 }}>
         <MapContainer
           center={[36.3206, 59.56]}
@@ -221,7 +205,7 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           />
 
-          {allPath &&
+          {/* {allPath &&
             allPath.map((item: any, index: number) => (
               <ViewPath
                 key={index}
@@ -232,7 +216,35 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
                 locationInfo={locationInfo}
                 setLocationInfo={setLocationInfo}
               />
-            ))}
+            ))} */}
+
+          {!pathInfo &&
+            !searchUser &&
+            users?.map((item: any, index: number) => {
+              return (
+                <Marker
+                  key={index}
+                  position={[item.lat, item.lng]}
+                  icon={ColoredMarker("purple")}
+                >
+                  <Popup>
+                    <Box
+                      width={"100%"}
+                      display={"flex"}
+                      flexDirection={"column"}
+                      justifyContent={"center"}
+                      alignItems={"center"}
+                      sx={{ direction: "rtl", fontFamily: "IRANSansX" }}
+                    >
+                      <Box mt={1}>نام : {item?.name}</Box>
+                      <Box mt={1}>توضیحات : {item?.description}</Box>
+                      <Box mt={1}>عرض جغرافیایی : {item.lat}</Box>
+                      <Box mt={1}>طول جفرافیایی: {item.lng}</Box>
+                    </Box>
+                  </Popup>
+                </Marker>
+              );
+            })}
 
           {/*  برای جستجو جایگاه */}
           {seachLocation.latLng?.length !== 0 && (
@@ -257,6 +269,15 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
             </Marker>
           )}
 
+          {pathInfo && (
+            <ViewPath
+              item={pathInfo}
+              users={users}
+              locationInfo={locationInfo}
+              setLocationInfo={setLocationInfo}
+            />
+          )}
+
           {/* برای جستجو کارمند */}
           {searchUser &&
             searchUser?.length !== 0 &&
@@ -265,7 +286,7 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
                 <Marker
                   key={index}
                   position={{ lat: item.lat, lng: item.lng }}
-                  icon={ColoredMarker("purple")}
+                  icon={ColoredMarker("blue")}
                 >
                   <Popup>
                     <Box
@@ -292,6 +313,37 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
           <FlyToPosition position={seachLocation.latLng} />
         </MapContainer>
       </Box>
+    );
+  }
+
+//   useEffect(() => {
+//     if (searchUser) {
+//       setPathInfo(null);
+//     }
+//   }, [searchUser]);
+
+//   useEffect(() => {
+//     if (pathInfo) {
+//       setSearchUser(null);
+//     }
+//   }, [pathInfo]);
+
+  useEffect(() => {
+    getLocationList();
+  }, []);
+
+  useEffect(() => {
+    console.log(searchUser);
+  }, [searchUser]);
+
+  return (
+    <Box
+      sx={{ width: "100%", height: "100%", position: "relative" }}
+      display={"flex"}
+      flexDirection={"column"}
+    >
+      {actions()}
+      {mapContent()}
     </Box>
   );
 }
@@ -310,20 +362,25 @@ function FlyToPosition({ position }: { position: [number, number] }) {
 
 function ViewPath(props: {
   item: any;
-  selectedPath: any;
-  setSelectedPath: any;
   users: any;
   locationInfo: any;
   setLocationInfo: any;
 }) {
-  const {
-    item,
-    selectedPath,
-    setSelectedPath,
-    users,
-    locationInfo,
-    setLocationInfo,
-  } = props;
+  const { item, users, locationInfo } = props;
+  const [selectedPath, setSelectedPath] = useState<{
+    pathInfo: any;
+    locations: any[];
+  }>({ pathInfo: null, locations: [] });
+
+  useEffect(() => {
+    const pathLocation = users.filter(
+      (item1: any) => item1.pathId === +item.id
+    );
+    setSelectedPath({
+      pathInfo: item,
+      locations: pathLocation,
+    });
+  }, [item]);
 
   return (
     <>
@@ -396,33 +453,6 @@ function ViewPath(props: {
             <Box mt={1}>
               طول مسیر :{" "}
               {buildPathKilometr(item.path ? JSON.parse(item.path) : [])}
-            </Box>
-            <Box sx={{ width: "100%" }} display={"flex"} gap={1} mt={1}>
-              <Box
-                sx={{ width: "100%" }}
-                display={"flex"}
-                justifyContent={"center"}
-              >
-                <Button
-                  variant="contained"
-                  onClick={() => {
-                    setSelectedPath(() => {
-                      const pathLocation = users.filter(
-                        (item1: any) => item1.pathId === +item.id
-                      );
-                      return {
-                        pathInfo: item,
-                        locations: pathLocation,
-                      };
-                    });
-                  }}
-                  color="success"
-                  fullWidth
-                  size="small"
-                >
-                  نمایش جایگاه ها
-                </Button>
-              </Box>
             </Box>
           </Box>
         </Popup>

@@ -4,7 +4,17 @@ import { NextResponse } from "next/server";
 const prisma = new PrismaClient();
 
 export async function GET() {
-  const users = await prisma.users.findMany();
+  const users = await prisma.users.findMany({
+    select: {
+      id: true,
+      name: true,
+      nationalCode: true,
+      description: true,
+      lat: true,
+      lng: true,
+      pathId: true,
+    },
+  });
   return NextResponse.json(users);
 }
 

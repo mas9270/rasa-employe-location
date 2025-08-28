@@ -37,7 +37,7 @@ const schema = z.object({
     .min(10, "کد ملی باید 10 کاراکتر باشد")
     .max(10, "کد ملی باید 10 کاراکتر باشد"),
   description: z.string(),
-  pathId: z.string().min(1, "شناسه مسیر را وارد کنید"),
+  pathId: z.string().optional(),
   lat: z.string().min(1, "عرض جغرافیایی را وارد کنید"),
   lng: z.string().min(1, "طول جغرافیایی را وارد کنید"),
 });
@@ -137,7 +137,7 @@ function Form(props: {
                 name: data.name.trim(),
                 nationalCode: data.nationalCode.trim(),
                 description: data.description.trim(),
-                pathId: +data.pathId,
+                pathId: data.pathId ? +data.pathId : 0,
                 lat: +data.lat,
                 lng: +data.lng,
               }),
@@ -176,7 +176,7 @@ function Form(props: {
                 name: data.name.trim(),
                 nationalCode: data.nationalCode.trim(),
                 description: data.description.trim(),
-                pathId: +data.pathId,
+                pathId: data.pathId ? +data.pathId : 0,
                 lat: +data.lat,
                 lng: +data.lng,
               }),
@@ -214,7 +214,9 @@ function Form(props: {
       .then((res) => res.json())
       .then((res) => {
         const findName = res.find(
-          (item: any) => +item.id === +currentLocationForm
+          (item: any) =>
+            +item.id ===
+            (currentLocationForm !== undefined ? +currentLocationForm : null)
         )?.name;
         setLocationName(findName);
         setLoading(false);
@@ -461,7 +463,7 @@ function GetPath(props: {
 }
 
 function GetLocation(props: {
-  pathId: string | number;
+  pathId?: string | number;
   latLng: any;
   locationInfo: any;
   onClose: (lng?: any) => void;
@@ -476,7 +478,9 @@ function GetLocation(props: {
     fetch("/api/paths")
       .then((res) => res.json())
       .then((res) => {
-        const current = res.find((item: any) => item.id === +pathId);
+        const current = res.find(
+          (item: any) => item.id === (pathId !== undefined ? +pathId : null)
+        );
         if (current) {
           setPath(current);
         }

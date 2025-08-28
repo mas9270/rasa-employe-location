@@ -19,7 +19,7 @@ export const ColoredMarker = (
 ) => {
   // رنگ دلخواه را انتخاب می‌کنیم
   const fillColor =
-    color === "red" ? "#FF4136" : color === "green" ? "#2ECC40" : "#0074D9"; // blue پیش‌فرض
+    color === "red" ? "#FF4136" : color === "green" ? "#2ECC40" : color === "blue"? "#0074D9" : color === "black" ?"#000000" :"#800080"; // blue پیش‌فرض
 
   return L.divIcon({
     html: `
