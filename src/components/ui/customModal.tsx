@@ -57,7 +57,7 @@ export default function CustomModal(props: { children?: React.ReactNode, active:
                         >انصراف</Button>
                     </Box>
                 </Box>
-
+{/* 
                 {loading &&
                     <Box
                         sx={{
@@ -72,7 +72,7 @@ export default function CustomModal(props: { children?: React.ReactNode, active:
                         }}>
                         <CircularProgress />
                     </Box>
-                }
+                } */}
             </Box>
         </Modal >
     );

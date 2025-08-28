@@ -6,8 +6,6 @@ import {
   TextField,
   Button,
   Stack,
-  Modal,
-  Divider,
   Box,
   CircularProgress,
   InputAdornment,
@@ -830,7 +828,7 @@ function GetLocation1(props: {
               );
             })}
         </MapContainer>
-        {loading && (
+        {/* {loading && (
           <Box
             sx={{
               display: "flex",
@@ -849,7 +847,7 @@ function GetLocation1(props: {
           >
             <CircularProgress />
           </Box>
-        )}
+        )} */}
       </Box>
     );
   }
