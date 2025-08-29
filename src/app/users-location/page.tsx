@@ -166,13 +166,16 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
             id="free-solo-demo"
             freeSolo
             size="small"
-            value={pathInfo?.name}
+            value={pathInfo}
+            options={allPath}
+            getOptionLabel={
+              (option) => `${option.id} - ${option.name}` // ترکیبی برای نمایش
+            }
+            isOptionEqualToValue={(option, value) => option.id === value.id} // مقایسه بر اساس کلید خاص
+            renderInput={(params) => <TextField {...params} label="نام مسیر" />}
             onChange={(_event, newValue, a, b) => {
               setPathInfo(newValue);
             }}
-            options={allPath}
-            getOptionLabel={(option: any) => option?.name} // 👈 فقط name رو نشون میده
-            renderInput={(params) => <TextField {...params} label="نام مسیر" />}
           />
           <Button
             disabled={loading}
@@ -310,17 +313,17 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
     );
   }
 
-//   useEffect(() => {
-//     if (searchUser) {
-//       setPathInfo(null);
-//     }
-//   }, [searchUser]);
+  //   useEffect(() => {
+  //     if (searchUser) {
+  //       setPathInfo(null);
+  //     }
+  //   }, [searchUser]);
 
-//   useEffect(() => {
-//     if (pathInfo) {
-//       setSearchUser(null);
-//     }
-//   }, [pathInfo]);
+  //   useEffect(() => {
+  //     if (pathInfo) {
+  //       setSearchUser(null);
+  //     }
+  //   }, [pathInfo]);
 
   useEffect(() => {
     getLocationList();
