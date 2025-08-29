@@ -238,8 +238,6 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
                     >
                       <Box mt={1}>نام : {item?.name}</Box>
                       <Box mt={1}>توضیحات : {item?.description}</Box>
-                      <Box mt={1}>عرض جغرافیایی : {item.lat}</Box>
-                      <Box mt={1}>طول جفرافیایی: {item.lng}</Box>
                     </Box>
                   </Popup>
                 </Marker>
@@ -262,8 +260,6 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
                   }}
                 >
                   <Box>{seachLocation.text}</Box>
-                  <Box>عرض جغرافیایی : {seachLocation.latLng[0]}</Box>
-                  <Box>طول جفرافیایی: {seachLocation.latLng[1]}</Box>
                 </Box>
               </Popup>
             </Marker>
@@ -302,8 +298,6 @@ function Locations(props: { locationInfo: any; setLocationInfo: any }) {
                     >
                       <Box>نام : {item.name}</Box>
                       <Box>توضیحات : {item.description}</Box>
-                      <Box>عرض جغرافیایی : {item.lat}</Box>
-                      <Box>طول جفرافیایی: {item.lng}</Box>
                     </Box>
                   </Popup>
                 </Marker>
@@ -405,27 +399,6 @@ function ViewPath(props: {
                 >
                   <Box mt={1}>نام : {item?.name}</Box>
                   <Box mt={1}>توضیحات : {item?.description}</Box>
-                  <Box mt={1}>عرض جغرافیایی : {item.lat}</Box>
-                  <Box mt={1}>طول جفرافیایی: {item.lng}</Box>
-                  {/* <Box sx={{ width: "100%" }} display={"flex"} gap={1} mt={1}>
-                    <Box
-                      sx={{ width: "100%" }}
-                      display={"flex"}
-                      justifyContent={"center"}
-                    >
-                      <Button
-                        variant="contained"
-                        onClick={() => {
-                          setLocationInfo(item);
-                        }}
-                        color="success"
-                        fullWidth
-                        size="small"
-                      >
-                        انتخاب
-                      </Button>
-                    </Box>
-                  </Box> */}
                 </Box>
               </Popup>
             </Marker>
